@@ -1,0 +1,472 @@
+[
+  {
+    "slug": "scheduling",
+    "headline": "Reducing time on task",
+    "title": "Scheduling (2023)",
+    "summary": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
+    "cardImage": {
+      "src": "/images/work/before-published.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/before-published.png",
+      "alt": ""
+    },
+    "tags": [
+      "Product Design",
+      "UX / UI"
+    ],
+    "heroImage": {
+      "src": "/images/work/before-published.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
+    "roles": [
+      "Design Leadership",
+      "Stakeholder interviews",
+      "Research",
+      "Information Architecture",
+      "Design System",
+      "Mockups",
+      "Prototyping",
+      "Prototyping",
+      "Requirements gathering",
+      "Workshop Facilitation"
+    ],
+    "roleColumns": [
+      "<p>Led the research and design of the Lifelenz product suite. </p><p>Focused on reducing barriers to adoption.</p>",
+      "<p>Worked closely with stakeholders and user groups to understand friction in encumbent systems and created novel user experiences that reduced cognitive load and offered multimodal interaction patterns.</p>",
+      "<p>Advocated for principled design, resulting in the facilitation of complex scheduling tasks.</p>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>Decrease in time on task (time taken to create a schedule)</li><li>Improved scheduling resulting in less flux on schedule prior to shift running</li><li>Increase in customer satisfaction</li><li>Increase in employee satisfaction</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/lifelenz-mobile-schedule.svg",
+      "alt": "Lifelenz Employee App"
+    }
+  },
+  {
+    "slug": "data-visualisation-ui-kit",
+    "headline": "Reusable  visualisation components",
+    "title": "Data Visualisation UI Kit (2014)",
+    "summary": "<p>The Data Visualisation UI kit was designed to be the foundation of all visualisations in Accenture Interactive products. The key drivers for the kit were to standardise ways of working, speeding up design, development, testing and improving user experience.</p>",
+    "cardImage": {
+      "src": "/images/work/charts.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/charts.png",
+      "alt": ""
+    },
+    "tags": [
+      "Data Viz",
+      "Visual Design",
+      "Product Design"
+    ],
+    "heroImage": {
+      "src": "/images/work/charts.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>The Data Visualisation UI kit was designed to be the foundation of all visualisations in Accenture Interactive products. The key drivers for the kit were to standardise ways of working, speeding up design, development, testing and improving user experience.</p>",
+    "roles": [
+      "Mockups",
+      "Prototyping",
+      "Implementation"
+    ],
+    "roleColumns": [
+      "<p>Design visualisations in line with the established principles and styles.</p>",
+      "<p>Understand the constraints of the selected framework (highcharts) and design accordingly.</p>",
+      "<p>Collaborate with developers on the implementation of charts. Manage chart repository and versioning.</p>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>Reduced time take to design new products and features by leveraging reusable components.</li><li>Reduced time taken to rollout enhancements to visualisation elements.</li><li>Standardised implementation and data visualisation frameworks in use.</li><li>Standardised user experience.</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/charts2.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "reducing-friction-in-signup",
+    "headline": "Mid-fidelity prototype",
+    "title": "Reducing friction in signup (2020)",
+    "summary": "<p>User feedback and behavioural analytics indicated a sub-optimal signup process.</p><p>Divergent thinking, research of dominant patterns, and design iteration resulted in a mid-fidelity prototype that could be tested  with users and  further refined.</p>",
+    "cardImage": {
+      "src": "/images/work/signup.svg",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/signup.svg",
+      "alt": ""
+    },
+    "tags": [
+      "UX / UI",
+      "Research",
+      "Prototyping",
+      "Process"
+    ],
+    "heroImage": {
+      "src": "/images/work/signup.svg",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>User feedback and behavioural analytics indicated a sub-optimal signup process.</p><p>Divergent thinking, research of dominant patterns, and design iteration resulted in a mid-fidelity prototype that could be tested  with users and  further refined.</p>",
+    "roles": [
+      "Design Leadership",
+      "Research",
+      "UX / UI"
+    ],
+    "roleColumns": [],
+    "midImage": null,
+    "outcomes": "<ul><li>Decrease in signup drop-offs</li><li>Decrease in manager assistance required</li><li>Decrease in support calls</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/login-2.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "time-clock",
+    "headline": "Compliance first",
+    "title": "Time Clock (2020)",
+    "summary": "<p>QSR Managers are busy on the floor helping staff to respond to customer orders, they need a way to ensure shift compliance at a glance, and at a distance. </p><p>High contrast tiles were used to ensure compliance risks could be perceived from across a busy workspace. </p><p>The solution was designed to run on POS machines and overhead displays, later being adopted for tablet &amp; mobile.</p>",
+    "cardImage": {
+      "src": "/images/work/rest-screen.svg",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/rest-screen.svg",
+      "alt": ""
+    },
+    "tags": [
+      "Design Leadership",
+      "UX / UI"
+    ],
+    "heroImage": {
+      "src": "/images/work/rest-screen.svg",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>QSR Managers are busy on the floor helping staff to respond to customer orders, they need a way to ensure shift compliance at a glance, and at a distance. </p><p>High contrast tiles were used to ensure compliance risks could be perceived from across a busy workspace. </p><p>The solution was designed to run on POS machines and overhead displays, later being adopted for tablet &amp; mobile.</p>",
+    "roles": [
+      "Product Vision",
+      "Stakeholder interviews",
+      "Research",
+      "UX / UI",
+      "Prototyping",
+      "Coaching",
+      "Accessibility Compliance (WCAG & ADA)"
+    ],
+    "roleColumns": [],
+    "midImage": null,
+    "outcomes": "<ul><li>Decrease in non-compliance events</li><li>Decrease in time spent running shifts</li><li>Increase in customer satisfaction</li><li>Increase in staff satisfaction</li><li>Decrease in shift running costs</li><li>Decrease risk of litigation</li></ul>",
+    "outcomesImage": null
+  },
+  {
+    "slug": "advanced-analytics-platform",
+    "headline": "Honed strategy",
+    "title": "Advanced Analytics Platform (2015)",
+    "summary": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be be able adjust strategy in in accordance with market response.</p>",
+    "cardImage": {
+      "src": "/images/work/aaap-dashboard.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/aap2.svg",
+      "alt": ""
+    },
+    "tags": [
+      "UX / UI",
+      "AI / ML",
+      "Data Viz"
+    ],
+    "heroImage": {
+      "src": "/images/work/aaap-dashboard.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be be able adjust strategy in in accordance with market response.</p>",
+    "roles": [
+      "User journey mapping",
+      "Mockups",
+      "Requirements gathering",
+      "User Story Mapping",
+      "Stakeholder interviews"
+    ],
+    "roleColumns": [
+      "<ul><li>Design a library of chart and graph components</li><li>Enable role based customisable views</li></ul>",
+      "<ul><li>Enable user to take action on insights</li><li>Adjust campaign budget</li><li>Determine halo and cannibalisation affect</li><li>Create what-if scenarios</li></ul>",
+      "<ul><li>Lead persona driven design activities</li><li>Conduct in depth user interviews to empathise and understand user drivers</li><li>Customise user journeys based on different altitudes of data required</li></ul>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>Improved user experience by removing dependence on spreadsheets</li><li>Improved data quality thru centralisation of tasks and provision of audit logs</li><li>Enabled real time analysis of campaign spend &amp; effectiveness</li><li>Provided centralised campaign schedule management &amp; what-if scenario planning</li><li>Increased awareness of campaign interactions</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/aap2.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "org-analytics",
+    "headline": "Survey builder",
+    "title": "Organisational Analytics (2017)",
+    "summary": "<p>When Change Tracking (Organisational Analytics) was acquired by Accenture, it had a primitive user interface and limited features. As a priority a self service survey builder was designed.</p>",
+    "cardImage": {
+      "src": "/images/work/ct-survey-builder-questions-question-builder-drag-1.svg",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/ct-survey-builder-questions-question-builder-drag-1.svg",
+      "alt": ""
+    },
+    "tags": [
+      "UX / UI",
+      "Information Architecture",
+      "Data Viz",
+      "Change Management"
+    ],
+    "heroImage": {
+      "src": "/images/work/ct-survey-builder-questions-question-builder-drag-1.svg",
+      "alt": "Low fidelity mockup of survey builder UI."
+    },
+    "heroCaption": "Low fidelity mockup of survey builder UI.",
+    "intro": "<p>When Change Tracking (Organisational Analytics) was acquired by Accenture, it had a primitive user interface and limited features. As a priority a self service survey builder was designed.</p>",
+    "roles": [
+      "Design Leadership",
+      "Research",
+      "Workshop Facilitation",
+      "Design System",
+      "Wireframing",
+      "Mockups",
+      "Prototyping",
+      "Implementation",
+      "Requirements gathering",
+      "SCRUM"
+    ],
+    "roleColumns": [],
+    "midImage": {
+      "src": "/images/work/user-inquiry.png",
+      "alt": "Persona card for Transformation Lead persona"
+    },
+    "outcomes": "<p>By enabling users to create their own surveys the product team created positive outcomes.</p><ul><li>Reduced cost</li><li>Increased client retention rates</li><li>Increased new clients</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/ct-persona.png",
+      "alt": "Persona card for Transformation Lead persona"
+    }
+  },
+  {
+    "slug": "accenture-clustering-engine",
+    "headline": "Designing intuitive views",
+    "title": "Accenture Clustering Engine (2016)",
+    "summary": "<p>Companies face a flood of marketing data but struggle to derive actionable insights. Analytics teams often rely on intuition with traditional tools like Excel, leading to uneven, non-differentiated segments. They are also overwhelmed by trillions of possible solutions, most of which fall short.</p><p>The Accenture Clustering Engine (ACE) offers a breakthrough: it uses AI and advanced visualisation to deliver precise, actionable customer segments in hours rather than months. By categorising data into Business Drivers, Profile Variables, and Clustering Variables, it focuses on relevant clusters to create effective segments that boost marketing impact. This platform’s adaptive search process quickly narrows down high-potential solutions, and its visualisation tools empower teams to refine and select optimal segments collaboratively.</p><p>Using an Agile and iterative product development strategy, early alpha releases provided inputs that refined the methodology. A prototype of the ACE was used to analyse Microsoft’s Bing customer survey data. The analysis helped Microsoft find strategic target segments within a competitor’s customer base that were primed for conversion. </p>",
+    "cardImage": {
+      "src": "/images/work/inspector-panel.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/inspector-panel-1.png",
+      "alt": ""
+    },
+    "tags": [
+      "Data Viz",
+      "AI / ML",
+      "UX / UI"
+    ],
+    "heroImage": {
+      "src": "/images/work/inspector-panel.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>Companies face a flood of marketing data but struggle to derive actionable insights. Analytics teams often rely on intuition with traditional tools like Excel, leading to uneven, non-differentiated segments. They are also overwhelmed by trillions of possible solutions, most of which fall short.</p><p>The Accenture Clustering Engine (ACE) offers a breakthrough: it uses AI and advanced visualisation to deliver precise, actionable customer segments in hours rather than months. By categorising data into Business Drivers, Profile Variables, and Clustering Variables, it focuses on relevant clusters to create effective segments that boost marketing impact. This platform’s adaptive search process quickly narrows down high-potential solutions, and its visualisation tools empower teams to refine and select optimal segments collaboratively.</p><p>Using an Agile and iterative product development strategy, early alpha releases provided inputs that refined the methodology. A prototype of the ACE was used to analyse Microsoft’s Bing customer survey data. The analysis helped Microsoft find strategic target segments within a competitor’s customer base that were primed for conversion. </p>",
+    "roles": [
+      "Wireframing",
+      "Mockups",
+      "User Story Mapping",
+      "Prototyping",
+      "User journey mapping"
+    ],
+    "roleColumns": [
+      "<p>Worked closely with Data Scientists and Data Analysts to understand their processes and design interfaces that facilitate evaluation of cluster candidates and team collaboration.</p>",
+      "<p>Created wireframes and mockups of screens to capture the definition, analysis and troubleshooting of variables.</p>",
+      "<p>Conducted user story mapping, wrote user stories and acceptance criteria.</p>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>ACE continues to be core to Accenture Analytics services </li><li>Increased conversions </li><li>Decreased spend</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/properties-inspector-clamp-edit-2x.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "recommendation-engine",
+    "headline": "Workflow builder",
+    "title": "Recommendation Engine (2017)",
+    "summary": "<p>Support of automated jobs was falling on the engineering team. Crafting an interface for orchestration - creation, editing and troubleshooting meant that support could be done by analysts and first level support.</p>",
+    "cardImage": {
+      "src": "/images/work/are-workflow.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/are.png",
+      "alt": ""
+    },
+    "tags": [
+      "UX / UI",
+      "AI / ML"
+    ],
+    "heroImage": {
+      "src": "/images/work/are-workflow.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>Support of automated jobs was falling on the engineering team. Crafting an interface for orchestration - creation, editing and troubleshooting meant that support could be done by analysts and first level support.</p>",
+    "roles": [
+      "User journey mapping",
+      "Requirements gathering",
+      "Data Viz",
+      "Wireframing",
+      "Mockups",
+      "User Story Mapping"
+    ],
+    "roleColumns": [
+      "<p>Worked closely with developers to understand data flows. Designed task orchestration user journeys, enabling analysts and developers to create, edit and monitor data flows.</p>",
+      "<p>Designed screens for the definition of data sources and data sets.</p>",
+      "<p>Documentation of existing and to-be architecture and gap and analysis.</p>"
+    ],
+    "midImage": {
+      "src": "/images/work/are-architecture.png",
+      "alt": ""
+    },
+    "outcomes": "<ul><li>Successful design and implementation of the orchestration feature</li></ul>",
+    "outcomesImage": null
+  },
+  {
+    "slug": "accenture-multimedia-advertisting-platform",
+    "headline": "Tracking placement & spend",
+    "title": "Multimedia Advertising Platform (2015)",
+    "summary": "<p>Agencies have variable data naming conventions. These variables need to be mapped into a hierarchical standardised data model for aggregation and reporting. Brands need to track bookings, spots, and goals to understand workflow next steps.</p>",
+    "cardImage": {
+      "src": "/images/work/amp-global-dashboard-2x-1.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/amp-global-dashboard-2x-1.png",
+      "alt": ""
+    },
+    "tags": [
+      "Product Design",
+      "Service Design",
+      "UX / UI"
+    ],
+    "heroImage": {
+      "src": "/images/work/amp-global-dashboard-2x-1.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>Agencies have variable data naming conventions. These variables need to be mapped into a hierarchical standardised data model for aggregation and reporting. Brands need to track bookings, spots, and goals to understand workflow next steps.</p>",
+    "roles": [
+      "Wireframing",
+      "Mockups",
+      "Visual Design",
+      "Data Viz",
+      "Stakeholder interviews"
+    ],
+    "roleColumns": [
+      "<p>Designed dashboards to assist in tracking of process and promotion of next best actions.</p>",
+      "<p>Designed user journey maps and conducted stakeholder interviews.</p>",
+      "<p>Designed UIs for data mapping and data import error remediation.</p>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>Improved agency data mappings</li><li>Decreased time to discover data mapping errors</li><li>Decreased second level support</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/import-data-formats-2x.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "digital-diagnositcs",
+    "headline": "Precision insights",
+    "title": "Digital Diagnositcs (2015)",
+    "summary": "<p>Optimising website performance through diagnosis of page load times, in and outbound links, accessibility etc.</p><p>ADD was instrumental in the optimisation of the healthcare.gov. </p><p>Read more <a href=\"https://www.accenture.com/us-en/case-studies/us-federal-government/enhanching-healthcare-gov\">here</a></p>",
+    "cardImage": {
+      "src": "/images/work/leaderboard-nav-expanded-1.png",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/leaderboard-nav-expanded-1.png",
+      "alt": ""
+    },
+    "tags": [
+      "Product Design",
+      "UX / UI",
+      "Research",
+      "Stakeholder interviews",
+      "Workshop Facilitation"
+    ],
+    "heroImage": {
+      "src": "/images/work/leaderboard-nav-expanded-1.png",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>Optimising website performance through diagnosis of page load times, in and outbound links, accessibility etc.</p><p>ADD was instrumental in the optimisation of the healthcare.gov. </p><p>Read more <a href=\"https://www.accenture.com/us-en/case-studies/us-federal-government/enhanching-healthcare-gov\">here</a></p>",
+    "roles": [
+      "Wireframing",
+      "Mockups",
+      "Design System",
+      "Information Architecture",
+      "Prototyping",
+      "Research",
+      "Stakeholder interviews",
+      "Workshop Facilitation",
+      "User journey mapping",
+      "Requirements gathering"
+    ],
+    "roleColumns": [
+      "<p>Designed scanning tools to diagnose website health. </p>",
+      "<p>Design dashboards and printable reports for the analysis of website health statistics. </p>",
+      "<p>Provide tracking screens that enable users to monitor the impact of remediation.</p>"
+    ],
+    "midImage": null,
+    "outcomes": "<ul><li>Reduction in page load times</li><li>Optimised search engine results</li><li>Increased click-thru</li><li>Decreased drop-off</li><li>Decrease in security threats</li><li>Increase in accessibility standards compliance</li></ul>",
+    "outcomesImage": {
+      "src": "/images/work/add-journey.png",
+      "alt": ""
+    }
+  },
+  {
+    "slug": "big-stories",
+    "headline": "SXSW award winner",
+    "title": "Big Stories (2008)",
+    "summary": "<p>The Big Stories website is a digital platform designed to capture, promote, and preserve the unique stories of communities across various Australian regions. Each story serves as a window into the lives, culture, and traditions of the people who shape these areas, offering visitors a rich and immersive experience. The goal of the site is to foster a deeper connection between communities and wider audiences, ensuring that the essence of regional cultures is shared and celebrated.</p>",
+    "cardImage": {
+      "src": "/images/work/bsc10035-ui-video-1.svg",
+      "alt": ""
+    },
+    "mobileImage": {
+      "src": "/images/work/bsc10035-ui-video-1.svg",
+      "alt": ""
+    },
+    "tags": [
+      "UX / UI"
+    ],
+    "heroImage": {
+      "src": "/images/work/bsc10035-ui-video-1.svg",
+      "alt": ""
+    },
+    "heroCaption": "",
+    "intro": "<p>The Big Stories website is a digital platform designed to capture, promote, and preserve the unique stories of communities across various Australian regions. Each story serves as a window into the lives, culture, and traditions of the people who shape these areas, offering visitors a rich and immersive experience. The goal of the site is to foster a deeper connection between communities and wider audiences, ensuring that the essence of regional cultures is shared and celebrated.</p>",
+    "roles": [
+      "Wireframing",
+      "Mockups",
+      "Visual Design",
+      "Information Architechture",
+      "User journey mapping"
+    ],
+    "roleColumns": [],
+    "midImage": null,
+    "outcomes": "<p>Created a successful model for community engagement on upskilling that has been replicated</p>",
+    "outcomesImage": {
+      "src": "/images/work/bsc10035-ui-homepage-1.svg",
+      "alt": ""
+    }
+  }
+]
