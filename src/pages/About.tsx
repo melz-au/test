@@ -22,18 +22,18 @@ export default function About() {
               to execute on multiyear programs of work.
             </p>
             <p>
-              My primary focus is on the realisation of busines benefits. While I am a data and AI strategic learder, I
+              My primary focus is on the realisation of business benefits. While I am a data and AI strategic leader, I
               advocate for human-centred design in all that I do. I balance risk mitigation and innovation, always
-              looking for safe solutions that create effiencies for businesses and employees.
+              looking for safe solutions that create efficiencies for businesses and employees.
             </p>
             <p>
               A great deal of my work has involved designing user interfaces for AI products, delivering actionable
               insights and recommendations. I am a technologist at heart, always focused on the future, continuously
-              learning and loking for new ways to provide business value.
+              learning and looking for new ways to provide business value.
             </p>
             <p>
               An empathetic leader, I seek to understand customer and user experience through the collection and
-              analysis of qualitative and quantitive data to reveal insights about capabilities and potential
+              analysis of qualitative and quantitative data to reveal insights about capabilities and potential
               optimisations.
             </p>
             <p>

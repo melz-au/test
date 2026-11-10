@@ -3,7 +3,7 @@
     "slug": "scheduling",
     "headline": "Reducing time on task",
     "title": "Scheduling (2023)",
-    "summary": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
+    "summary": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is a complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
     "cardImage": {
       "src": "/images/work/before-published.png",
       "alt": ""
@@ -21,7 +21,7 @@
       "alt": ""
     },
     "heroCaption": "",
-    "intro": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
+    "intro": "<p>Restaurant managers in QSR commonly spend on average over 6% of their time on scheduling. </p><p>Scheduling is a complex task, requiring multi-dimensional recall across employee skill levels, compliance with law, sales patterns, employee availability, and staff dynamics etc.</p><p>Partnering closely with stakeholders we worked to understand the most time consuming aspects and simplify those for MVP. As a result customers realised value immediately, slashing schedule creation time significantly.</p>",
     "roles": [
       "Design Leadership",
       "Stakeholder interviews",
@@ -36,7 +36,7 @@
     ],
     "roleColumns": [
       "<p>Led the research and design of the Lifelenz product suite. </p><p>Focused on reducing barriers to adoption.</p>",
-      "<p>Worked closely with stakeholders and user groups to understand friction in encumbent systems and created novel user experiences that reduced cognitive load and offered multimodal interaction patterns.</p>",
+      "<p>Worked closely with stakeholders and user groups to understand friction in incumbent systems and created novel user experiences that reduced cognitive load and offered multimodal interaction patterns.</p>",
       "<p>Advocated for principled design, resulting in the facilitation of complex scheduling tasks.</p>"
     ],
     "midImage": null,
@@ -166,7 +166,7 @@
     "slug": "advanced-analytics-platform",
     "headline": "Honed strategy",
     "title": "Advanced Analytics Platform (2015)",
-    "summary": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be be able adjust strategy in in accordance with market response.</p>",
+    "summary": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be able to adjust strategy in accordance with market response.</p>",
     "cardImage": {
       "src": "/images/work/aaap-dashboard.png",
       "alt": ""
@@ -185,7 +185,7 @@
       "alt": ""
     },
     "heroCaption": "",
-    "intro": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be be able adjust strategy in in accordance with market response.</p>",
+    "intro": "<p>At any given time the marketing team of a large Australian telco runs multiple campaigns. It is important to understand the campaign schedule, spend, and performance and be able to adjust strategy in accordance with market response.</p>",
     "roles": [
       "User journey mapping",
       "Mockups",
@@ -385,7 +385,7 @@
   {
     "slug": "digital-diagnositcs",
     "headline": "Precision insights",
-    "title": "Digital Diagnositcs (2015)",
+    "title": "Digital Diagnostics (2015)",
     "summary": "<p>Optimising website performance through diagnosis of page load times, in and outbound links, accessibility etc.</p><p>ADD was instrumental in the optimisation of the healthcare.gov. </p><p>Read more <a href=\"https://www.accenture.com/us-en/case-studies/us-federal-government/enhanching-healthcare-gov\">here</a></p>",
     "cardImage": {
       "src": "/images/work/leaderboard-nav-expanded-1.png",
