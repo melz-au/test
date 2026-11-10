@@ -1,11 +1,12 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import useBodyClass from '../components/useBodyClass'
-import { getWorkPost } from '../lib/work'
+import { getWorkPost, renamedWorkSlugs } from '../lib/work'
 import NotFound from './NotFound'
 
 export default function WorkPost() {
   const { slug = '' } = useParams()
   useBodyClass('body-3')
+  if (renamedWorkSlugs[slug]) return <Navigate to={`/work-posts/${renamedWorkSlugs[slug]}`} replace />
   const post = getWorkPost(slug)
   if (!post) return <NotFound />
 

@@ -29,3 +29,9 @@ export type WorkPost = {
 export const workPosts = data as WorkPost[]
 
 export const getWorkPost = (slug: string) => workPosts.find((p) => p.slug === slug)
+
+/** Old (misspelled) slugs from the Webflow site → current slugs. Old links redirect to the new URL. */
+export const renamedWorkSlugs: Record<string, string> = {
+  'digital-diagnositcs': 'digital-diagnostics',
+  'accenture-multimedia-advertisting-platform': 'accenture-multimedia-advertising-platform',
+}
