@@ -1,11 +1,11 @@
 ---
 title: "How to write a blog post"
 date: 2026-11-09
-summary: "An example draft showing the Markdown format. Drafts only appear while running the dev server."
+summary: "An example draft showing the Markdown format. Drafts are hidden from the live site."
 draft: true
 ---
 
-Every file in `src/content/blog/` is a blog post. The file name becomes the URL, so this file is served at `/blog/how-to-write-a-post`.
+The easiest way to write a post is the admin page at `/admin` on the live site. Behind the scenes, every file in `src/content/blog/` is a blog post. The file name becomes the URL, so this file is served at `/blog/how-to-write-a-post`.
 
 ## Front matter
 

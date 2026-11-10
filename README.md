@@ -10,21 +10,28 @@ npm run build     # static site in dist/
 
 ## Writing blog posts
 
-Every Markdown file in `src/content/blog/` is a blog post. Its file name is the URL:
-`src/content/blog/my-post.md` → `/blog/my-post`. Posts are listed newest first.
+### On the live site (recommended)
 
-You can create a post in three ways:
+Go to **`/admin`** on the live site and sign in with the admin password. From there you can write,
+preview, edit and delete posts and upload images. Publishing commits the post to GitHub
+(`src/content/blog/<slug>.md`, images in `public/images/blog/`), which triggers a Cloudflare rebuild,
+so the post is live about 2 minutes later.
 
-1. **In the browser:** run `npm run dev`, open `/blog`, and click **+ New post**
-   (or go to `/blog/new`). It has a Markdown preview and writes the `.md` file for you.
-   The editor exists only on the dev server, not on the live site.
-2. **From the terminal:** `npm run new-post -- "My post title"` (add `--draft` for a draft).
-3. **By hand:** add a `.md` file in that folder with this format:
+### Other ways
+
+Every Markdown file in `src/content/blog/` is a blog post, and its file name is the URL
+(`my-post.md` → `/blog/my-post`). You can also:
+
+- run `npm run dev` and use **+ New post** at `/blog/new` (writes the file locally; commit it to publish),
+- run `npm run new-post -- "My post title"` (add `--draft` for a draft), or
+- add or edit a file on GitHub directly.
+
+File format:
 
 ```markdown
 ---
 title: "My post title"
-date: 2026-11-09
+date: 2026-11-10
 summary: "Optional one-liner shown on the blog list."
 cover: "/images/blog/optional-cover.png"
 draft: true
@@ -33,10 +40,7 @@ draft: true
 Regular **Markdown** here.
 ```
 
-Drafts (`draft: true`) appear while running `npm run dev` and are hidden from production builds.
-Put post images in `public/images/blog/` and reference them as `/images/blog/<file>`.
-
-To publish a post, commit its `.md` file (and any images), then rebuild and deploy.
+Drafts (`draft: true`) are hidden from the live site; they show in `/admin` and with `npm run dev`.
 
 ## Case studies
 
@@ -59,7 +63,21 @@ VITE_CONTACT_ENDPOINT=https://formspree.io/f/your-id
 - `src/pages/`: one component per route
 - `scripts/blog-files.ts`: creates post files (used by the dev editor and `npm run new-post`)
 
-## Deploying
+## Deploying (Cloudflare Workers)
 
-This is a single-page app, so the host must serve `index.html` for unknown paths
-(e.g. Netlify `_redirects`: `/* /index.html 200`, or Vercel `rewrites`).
+`wrangler.jsonc` configures the Worker: it serves `dist/`, falls back to `index.html` for page URLs,
+and runs `worker/index.ts` for `/api/*` (the blog admin API).
+
+- The `name` in `wrangler.jsonc` must match the Worker's name in the Cloudflare dashboard.
+- Workers Builds should use build command `npm run build` and deploy command `npx wrangler deploy`,
+  with `master` as the production branch.
+- Set these **secrets** on the Worker (dashboard → your Worker → Settings → Variables and Secrets,
+  type *Secret*, or `npx wrangler secret put NAME`):
+  - `ADMIN_PASSWORD`: the password for `/admin`. Use a long one.
+  - `GITHUB_TOKEN`: a fine-grained GitHub token limited to this repository with
+    **Contents: Read and write** permission.
+- `GITHUB_REPO` and `GITHUB_BRANCH` are set in `wrangler.jsonc`.
+- Admin API requests are limited to 60 per minute per IP address.
+
+To try the admin page locally, copy `.dev.vars.example` to `.dev.vars`, fill it in, and run
+`npm run preview:worker`. That uses the real GitHub repo, so posts you publish there are real.

@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker's name in the Cloudflare dashboard (Workers & Pages).
+  "name": "test",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // Unknown paths (e.g. /blog/my-post) serve index.html so React Router can handle them.
+    "not_found_handling": "single-page-application",
+    // Only API requests run the Worker; everything else is served straight from the static files.
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "GITHUB_REPO": "melz-au/test",
+    "GITHUB_BRANCH": "master"
+  },
+  // Caps admin API requests per IP to slow down password guessing.
+  "ratelimits": [
+    {
+      "name": "ADMIN_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 60, "period": 60 }
+    }
+  ],
+  "observability": { "enabled": true }
+}
