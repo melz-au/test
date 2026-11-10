@@ -1,0 +1,4 @@
+# Copy to .dev.vars to try the /admin page locally with `npm run preview:worker`.
+# Never commit .dev.vars. On Cloudflare, set these as secrets instead (see README).
+ADMIN_PASSWORD=choose-a-long-password
+GITHUB_TOKEN=github_pat_xxx
