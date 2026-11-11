@@ -75,7 +75,10 @@ and runs `worker/index.ts` for `/api/*` (the blog admin API).
   type *Secret*, or `npx wrangler secret put NAME`):
   - `ADMIN_PASSWORD`: the password for `/admin`. Use a long one.
   - `GITHUB_TOKEN`: a fine-grained GitHub token limited to this repository with
-    **Contents: Read and write** permission.
+    **Contents: Read and write** permission. Create it on GitHub under Settings → Developer settings →
+    Personal access tokens → Fine-grained tokens → Generate new token: choose *Only select repositories*
+    → `melz-au/test`, and under Repository permissions set *Contents* to *Read and write*. When the token
+    expires, publishing from `/admin` stops until you replace the secret with a new token.
 - `GITHUB_REPO` and `GITHUB_BRANCH` are set in `wrangler.jsonc`.
 - Admin API requests are limited to 60 per minute per IP address.
 
