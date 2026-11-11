@@ -7,6 +7,7 @@ import BlogPost from './pages/BlogPost'
 import NewBlogPost from './pages/NewBlogPost'
 import WorkPost from './pages/WorkPost'
 import { AdminEditPost, AdminHome, AdminNewPost } from './pages/Admin'
+import { AdminWorkEdit, AdminWorkList, AdminWorkNew } from './pages/AdminWork'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -23,6 +24,9 @@ export default function App() {
         <Route path="/admin" element={<AdminHome />} />
         <Route path="/admin/new" element={<AdminNewPost />} />
         <Route path="/admin/edit/:slug" element={<AdminEditPost />} />
+        <Route path="/admin/work" element={<AdminWorkList />} />
+        <Route path="/admin/work/new" element={<AdminWorkNew />} />
+        <Route path="/admin/work/edit/:slug" element={<AdminWorkEdit />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

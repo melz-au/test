@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from 'react-router-dom'
 import useBodyClass from '../components/useBodyClass'
+import { renderMarkdown } from '../lib/blog'
 import { getWorkPost, renamedWorkSlugs } from '../lib/work'
 import NotFound from './NotFound'
 
@@ -41,7 +42,7 @@ export default function WorkPost() {
             {post.heroImage && <img src={post.heroImage.src} alt={post.heroImage.alt} className="image-10" />}
             {post.heroCaption && <div className="text-block-5">{post.heroCaption}</div>}
           </div>
-          <div className="rich-text-block-4 rte-dark large w-richtext" dangerouslySetInnerHTML={{ __html: post.intro }} />
+          <div className="rich-text-block-4 rte-dark large w-richtext" dangerouslySetInnerHTML={{ __html: renderMarkdown(post.intro) }} />
 
           <div className="w-layout-blockcontainer container-13 w-container">
             <div className="div-block-16">
@@ -61,9 +62,9 @@ export default function WorkPost() {
               </div>
               {post.roleColumns.length > 0 && (
                 <div className="div-block-12">
-                  {post.roleColumns.map((html, i) => (
+                  {post.roleColumns.map((md, i) => (
                     <div key={i} className="div-block-13">
-                      <div className="rte-dark w-richtext" dangerouslySetInnerHTML={{ __html: html }} />
+                      <div className="rte-dark w-richtext" dangerouslySetInnerHTML={{ __html: renderMarkdown(md) }} />
                     </div>
                   ))}
                 </div>
@@ -85,7 +86,7 @@ export default function WorkPost() {
                 <h2 className="work h2">
                   <strong className="bold-text">Outcomes</strong>
                 </h2>
-                <div className="rich-text-block-4 rte w-richtext" dangerouslySetInnerHTML={{ __html: post.outcomes }} />
+                <div className="rich-text-block-4 rte w-richtext" dangerouslySetInnerHTML={{ __html: renderMarkdown(post.outcomes) }} />
                 {post.outcomesImage && (
                   <img src={post.outcomesImage.src} loading="lazy" alt={post.outcomesImage.alt} className="image-12" />
                 )}

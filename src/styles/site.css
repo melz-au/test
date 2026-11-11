@@ -441,3 +441,88 @@ body {
   .admin-row-actions { text-align: left; }
   .admin-row-actions > * { margin: 0 16px 0 0; }
 }
+
+/* ---------- Admin: tabs and case studies ---------- */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid #3a3b44;
+}
+.admin-tabs a {
+  padding: 10px 18px;
+  color: #a9a6b8;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.admin-tabs a:hover { color: var(--white); }
+.admin-tabs a.is-active {
+  color: var(--white);
+  border-bottom-color: var(--purple-light);
+}
+
+.admin-order { white-space: nowrap; width: 1%; }
+.admin-order button,
+.admin-link-button {
+  background: none;
+  border: 0;
+  padding: 0 4px;
+  color: var(--purple-light);
+  font: inherit;
+  cursor: pointer;
+}
+.admin-order button { font-size: 18px; line-height: 24px; }
+.admin-order button:disabled,
+.admin-link-button:disabled { opacity: 0.3; cursor: default; }
+.admin-link-button:hover:not(:disabled) { text-decoration: underline; }
+
+.work-editor-section {
+  color: var(--white);
+  font: 600 22px/28px Gantari, sans-serif;
+  margin: 24px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid #3a3b44;
+}
+.work-editor-section:first-of-type { border-top: 0; padding-top: 0; margin-top: 8px; }
+.work-editor-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.admin-image-field {
+  border: 1px solid #3a3b44;
+  border-radius: 8px;
+  padding: 12px 16px 16px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-image-field legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--purple-light);
+}
+.admin-image-field legend .blog-muted { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.admin-image-field .blog-editor-cover { margin-top: 0; }
+.admin-image-field input:not([type='file']) {
+  width: 100%;
+  background: #24252b;
+  color: var(--white);
+  border: 1px solid #3a3b44;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: 400 16px/24px Gantari, sans-serif;
+}
+
+@media screen and (max-width: 767px) {
+  .work-editor-cols { grid-template-columns: 1fr; }
+}

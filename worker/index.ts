@@ -10,6 +10,7 @@
 
 import { createGitHub, GitHubError } from './github'
 import { parsePost, SLUG_RE, toMarkdown, validatePost, type PostFields } from '../src/lib/post-format'
+import { describeWorkChange, normalizeWorkList, serializeWorkList, type WorkPost } from '../src/lib/work-format'
 
 export interface Env {
   ASSETS: Fetcher
@@ -22,7 +23,8 @@ export interface Env {
 }
 
 const BLOG_DIR = 'src/content/blog'
-const IMAGE_DIR = 'public/images/blog'
+const WORK_FILE = 'src/data/work.json'
+const IMAGE_DIRS = { blog: 'public/images/blog', work: 'public/images/work' } as const
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 // SVG is excluded on purpose: it can carry scripts.
 const IMAGE_TYPES: Record<string, string> = {
@@ -169,7 +171,46 @@ async function handleApi(request: Request, env: Env, path: string): Promise<Resp
     }
   }
 
-  // POST /api/admin/images — multipart form with a "file" field. Returns the image's public URL.
+  // GET /api/admin/work — all case studies (hidden ones included), in home-page order.
+  if (path === 'work' && method === 'GET') {
+    const file = await gh.read(WORK_FILE)
+    if (!file) throw new HttpError(404, `${WORK_FILE} not found in the repository.`)
+    return json({ posts: JSON.parse(file.content) as WorkPost[], sha: file.sha })
+  }
+
+  // PUT /api/admin/work — replaces the whole list ({ posts, sha }). The sha guards against
+  // overwriting changes saved elsewhere since the list was loaded.
+  if (path === 'work' && method === 'PUT') {
+    const input = await readBody<{ posts?: unknown; sha?: string }>(request)
+    if (!input.sha) throw new HttpError(400, 'Missing sha.')
+    let posts: WorkPost[]
+    try {
+      posts = normalizeWorkList(input.posts)
+    } catch (e) {
+      throw new HttpError(400, e instanceof Error ? e.message : String(e))
+    }
+    const current = await gh.read(WORK_FILE)
+    if (!current) throw new HttpError(404, `${WORK_FILE} not found in the repository.`)
+    if (current.sha !== input.sha) {
+      throw new HttpError(409, 'The case studies were changed somewhere else since you loaded them. Reload and make your edits again.')
+    }
+    const content = serializeWorkList(posts)
+    // Nothing changed: don't commit, which would trigger a rebuild for nothing.
+    if (content === current.content) return json({ posts, sha: current.sha, unchanged: true })
+    const message = describeWorkChange(JSON.parse(current.content) as WorkPost[], posts)
+    try {
+      const { sha } = await gh.write(WORK_FILE, content, message, input.sha)
+      return json({ posts, sha })
+    } catch (e) {
+      if (e instanceof GitHubError && (e.status === 409 || e.status === 422)) {
+        throw new HttpError(409, 'The case studies were changed somewhere else since you loaded them. Reload and make your edits again.')
+      }
+      throw e
+    }
+  }
+
+  // POST /api/admin/images — multipart form with a "file" field and optional "folder" (blog|work).
+  // Returns the image's public URL.
   if (path === 'images' && method === 'POST') {
     let form: FormData
     try {
@@ -183,9 +224,10 @@ async function handleApi(request: Request, env: Env, path: string): Promise<Resp
     if (!ext) throw new HttpError(400, 'Images must be PNG, JPEG, GIF, WebP or AVIF.')
     if (upload.size > MAX_IMAGE_BYTES) throw new HttpError(413, 'Images must be 5 MB or smaller.')
     const base = (upload.name.replace(/\.[^.]*$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'image').slice(0, 60)
+    const folder = form.get('folder') === 'work' ? 'work' : 'blog'
     const name = `${base}-${Date.now().toString(36)}.${ext}`
-    await gh.write(`${IMAGE_DIR}/${name}`, new Uint8Array(await upload.arrayBuffer()), `Upload blog image: ${name}`)
-    return json({ url: `/images/blog/${name}` }, 201)
+    await gh.write(`${IMAGE_DIRS[folder]}/${name}`, new Uint8Array(await upload.arrayBuffer()), `Upload ${folder === 'work' ? 'case study' : 'blog'} image: ${name}`)
+    return json({ url: `/images/${folder}/${name}` }, 201)
   }
 
   throw new HttpError(404, 'Not found.')

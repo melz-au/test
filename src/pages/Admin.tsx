@@ -1,17 +1,19 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Nav from '../components/Nav'
 import PostForm from '../components/PostForm'
 import useBodyClass from '../components/useBodyClass'
-import { adminApi, ApiError, getPassword, setPassword, type AdminPost, type AdminPostSummary } from '../lib/admin-api'
+import useSignOutOn401 from '../components/useSignOutOn401'
+import { adminApi, getPassword, setPassword, type AdminPost, type AdminPostSummary } from '../lib/admin-api'
 import { formatDate } from '../lib/blog'
 
 const NOTICE_KEY = 'flytype-admin-notice'
 const LIVE_NOTE = 'Published posts go live after the site rebuilds, usually within 2 minutes.'
 
 /** Asks for the admin password once per browser session, then renders the admin page. */
-function AdminShell({ title, children }: { title: string; children: ReactNode }) {
+export function AdminShell({ title, children }: { title: string; children: ReactNode }) {
   useBodyClass('body-7')
+  const onWork = useLocation().pathname.startsWith('/admin/work')
   const [authed, setAuthed] = useState<boolean | null>(getPassword() ? null : false)
   const [pw, setPw] = useState('')
   const [error, setError] = useState('')
@@ -72,22 +74,25 @@ function AdminShell({ title, children }: { title: string; children: ReactNode })
             </form>
           </>
         )}
-        {authed && children}
+        {authed && (
+          <>
+            <nav className="admin-tabs" aria-label="Admin sections">
+              <Link to="/admin" className={onWork ? '' : 'is-active'}>
+                Blog posts
+              </Link>
+              <Link to="/admin/work" className={onWork ? 'is-active' : ''}>
+                Case studies
+              </Link>
+            </nav>
+            {children}
+          </>
+        )}
       </div>
     </>
   )
 }
 
-function useSignOutOn401(error: unknown) {
-  useEffect(() => {
-    if (error instanceof ApiError && error.status === 401) {
-      setPassword(null)
-      window.location.reload()
-    }
-  }, [error])
-}
-
-function SignOut() {
+export function SignOut() {
   return (
     <button
       type="button"
