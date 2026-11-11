@@ -44,8 +44,13 @@ Drafts (`draft: true`) are hidden from the live site; they show in `/admin` and 
 
 ## Case studies
 
-The home page and `/work-posts/<slug>` pages are generated from `src/data/work.json`.
-To add or edit a case study, edit that file. Images live in `public/images/work/`.
+Edit case studies on the live site at **`/admin` → Case studies**: change text and images, add new
+ones, hide them, reorder them (the order is the home page order) or delete them. Saving commits
+`src/data/work.json` (and uploaded images in `public/images/work/`) to GitHub, and the site rebuilds.
+
+Text fields (summary, introduction, role columns, outcomes) are Markdown. Hidden case studies
+(`"draft": true`) don't appear on the live site, but do with `npm run dev`. You can also edit
+`src/data/work.json` directly.
 
 ## Contact form
 

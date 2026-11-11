@@ -1,32 +1,12 @@
 import data from '../data/work.json'
+import type { WorkPost } from './work-format'
 
-export type Image = { src: string; alt: string }
+export type { Image, WorkPost } from './work-format'
 
-export type WorkPost = {
-  slug: string
-  /** Large headline shown on the home page, e.g. "Reducing time on task". */
-  headline: string
-  /** Project name + year, e.g. "Scheduling (2023)". */
-  title: string
-  /** HTML summary shown on the home page. */
-  summary: string
-  cardImage: Image | null
-  mobileImage: Image | null
-  tags: string[]
-  heroImage: Image | null
-  heroCaption: string
-  /** HTML */
-  intro: string
-  roles: string[]
-  /** HTML, up to three columns under "My Role". */
-  roleColumns: string[]
-  midImage: Image | null
-  /** HTML */
-  outcomes: string
-  outcomesImage: Image | null
-}
+const all = data as WorkPost[]
 
-export const workPosts = data as WorkPost[]
+/** Hidden case studies (draft: true) show while running `npm run dev`, not on the live site. */
+export const workPosts = import.meta.env.DEV ? all : all.filter((p) => !p.draft)
 
 export const getWorkPost = (slug: string) => workPosts.find((p) => p.slug === slug)
 

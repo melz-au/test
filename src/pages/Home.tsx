@@ -3,6 +3,7 @@ import Nav from '../components/Nav'
 import Reveal from '../components/Reveal'
 import ContactForm from '../components/ContactForm'
 import useBodyClass from '../components/useBodyClass'
+import { renderMarkdown } from '../lib/blog'
 import { workPosts } from '../lib/work'
 
 const logos = [
@@ -69,7 +70,7 @@ export default function Home() {
                         <Reveal as="h2" className="heading-9">
                           {p.title}
                         </Reveal>
-                        <div className="rich-text-block-6 w-richtext" dangerouslySetInnerHTML={{ __html: p.summary }} />
+                        <div className="rich-text-block-6 w-richtext" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.summary) }} />
                         <Reveal as={Link} to={`/work-posts/${p.slug}`} className="button-3 w-button">
                           View Work
                         </Reveal>
@@ -79,11 +80,16 @@ export default function Home() {
                           <img src={p.cardImage.src} loading="lazy" width={538} alt={p.cardImage.alt} className="image-16" />
                         </div>
                       )}
-                      {p.mobileImage && (
+                      {(p.mobileImage ?? p.cardImage) && (
                         <div className="collection-list-wrapper-8 w-dyn-list">
                           <div role="list" className="collection-list-7 w-dyn-items">
                             <Reveal role="listitem" className="collection-item-9 w-dyn-item w-dyn-repeater-item">
-                              <img src={p.mobileImage.src} loading="lazy" alt={p.mobileImage.alt} className="image-11" />
+                              <img
+                                src={(p.mobileImage ?? p.cardImage)!.src}
+                                loading="lazy"
+                                alt={(p.mobileImage ?? p.cardImage)!.alt}
+                                className="image-11"
+                              />
                             </Reveal>
                           </div>
                         </div>

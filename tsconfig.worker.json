@@ -15,5 +15,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["worker", "src/lib/post-format.ts"]
+  "include": ["worker", "src/lib/post-format.ts", "src/lib/work-format.ts"]
 }
