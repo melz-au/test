@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
 import Nav from '../components/Nav'
 import useBodyClass from '../components/useBodyClass'
 import { lines, linesAt, roundedPath, routePoints, stationById, stations, type Line, type Station } from '../lib/datamap'
@@ -66,12 +65,8 @@ function LineTip({ line }: { line: Line }) {
   )
 }
 
-export type DataMapVariant = 'neon' | 'sketch'
-
-/** The same map in two styles: 'neon' (futuristic, dark) and 'sketch' (hand-drawn ink on paper). */
-export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant }) {
-  const sketch = variant === 'sketch'
-  useBodyClass(sketch ? 'body-sketch' : 'body-5')
+export default function DataMap() {
+  useBodyClass('body-5')
   const [paused, setPaused] = useState(prefersReducedMotion)
   const [view, setView] = useState<'map' | 'table'>('map')
   const [isolated, setIsolated] = useState<string | null>(null)
@@ -83,8 +78,8 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
   const packetRefs = useRef(new Map<string, SVGGElement[]>())
 
   useEffect(() => {
-    document.title = sketch ? 'Data in motion, hand-drawn · Flytype' : 'Data in motion · Flytype'
-  }, [sketch])
+    document.title = 'Data in motion · Flytype'
+  }, [])
 
   // Move the packets along their lines. Positions are written straight to the DOM each frame
   // so React doesn't re-render 60 times a second.
@@ -145,7 +140,7 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
   return (
     <>
       <Nav />
-      <main className={`datamap${sketch ? ' is-sketch' : ''}`}>
+      <main className="datamap">
         <header className="datamap-header">
           <div className="name-text datamap-kicker">Data &amp; AI strategy</div>
           <h1 className="datamap-title">Data in motion</h1>
@@ -154,14 +149,6 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
             that make it trustworthy, to the dashboards, models and decisions it powers. Each line is a journey; each
             interchange is where journeys meet.
           </p>
-          <nav className="datamap-style-switch" aria-label="Map style">
-            <Link to="/data-map" aria-current={sketch ? undefined : 'page'}>
-              Neon
-            </Link>
-            <Link to="/data-map/sketch" aria-current={sketch ? 'page' : undefined}>
-              Hand-drawn
-            </Link>
-          </nav>
         </header>
 
         <div className="datamap-controls">
@@ -210,9 +197,7 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                 role="img"
                 aria-labelledby="datamap-svg-title datamap-svg-desc"
               >
-                <title id="datamap-svg-title">
-                  Data in motion: a {sketch ? 'hand-drawn ' : ''}metro-style map of a data and AI platform
-                </title>
+                <title id="datamap-svg-title">Data in motion: a metro-style map of a data and AI platform</title>
                 <desc id="datamap-svg-desc">
                   {lines.length} lines and {stations.length} stations. Use the table view for the same information as a list.
                 </desc>
@@ -227,15 +212,6 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                   <filter id="datamap-glow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="6" />
                   </filter>
- {/* Hand-drawn style: wobble strokes with noise, and a paper grain. */}
-                  <filter id="datamap-rough" x="-5%" y="-5%" width="110%" height="110%">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="noise" />
-                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.5" xChannelSelector="R" yChannelSelector="G" />
-                  </filter>
-                  <filter id="datamap-paper" x="0" y="0" width="100%" height="100%">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="3" result="grain" />
-                    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0.35  0 0 0 0 0.28  0 0 0 0 0.18  0 0 0 0.09 0" />
-                  </filter>
                   <filter id="datamap-packet-glow" x="-200%" y="-200%" width="500%" height="500%">
                     <feGaussianBlur stdDeviation="3" result="blur" />
                     <feMerge>
@@ -245,32 +221,20 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                   </filter>
                 </defs>
 
-                {sketch ? (
-                  <rect width={VIEW_W} height={VIEW_H} filter="url(#datamap-paper)" aria-hidden="true" />
-                ) : (
-                  <>
-                    <rect width={VIEW_W} height={VIEW_H} fill="url(#datamap-grid)" />
-                    <rect width={VIEW_W} height={VIEW_H} fill="url(#datamap-vignette)" />
-                    {/* Soft glow under each line */}
-                    <g filter="url(#datamap-glow)" aria-hidden="true">
-                      {lines.map((l) => (
-                        <path
-                          key={l.id}
-                          d={paths.get(l.id)}
-                          className={`datamap-line-glow${l.pattern === 'dashed' ? ' is-dashed' : ''}${lineState(l.id)}`}
-                          style={{ stroke: l.color }}
-                        />
-                      ))}
-                    </g>
-                  </>
-                )}
+                <rect width={VIEW_W} height={VIEW_H} fill="url(#datamap-grid)" />
+                <rect width={VIEW_W} height={VIEW_H} fill="url(#datamap-vignette)" />
 
-                <g filter={sketch ? 'url(#datamap-rough)' : undefined}>
-                {/* Hand-drawn style: an ink outline under each line, like ink and watercolour */}
-                {sketch &&
-                  lines.map((l) => (
-                    <path key={l.id} d={paths.get(l.id)} className={`datamap-line-casing${l.pattern ? ` is-${l.pattern}` : ''}${lineState(l.id)}`} aria-hidden="true" />
+                {/* Soft glow under each line */}
+                <g filter="url(#datamap-glow)" aria-hidden="true">
+                  {lines.map((l) => (
+                    <path
+                      key={l.id}
+                      d={paths.get(l.id)}
+                      className={`datamap-line-glow${l.pattern === 'dashed' ? ' is-dashed' : ''}${lineState(l.id)}`}
+                      style={{ stroke: l.color }}
+                    />
                   ))}
+                </g>
 
                 {/* The lines */}
                 {lines.map((l) => (
@@ -291,10 +255,9 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                   .map((l) => (
                     <path key={l.id} d={paths.get(l.id)} className={`datamap-line-stripe${lineState(l.id)}`} aria-hidden="true" />
                   ))}
-                </g>
 
                 {/* Data packets */}
-                <g filter={sketch ? undefined : 'url(#datamap-packet-glow)'} aria-hidden="true">
+                <g filter="url(#datamap-packet-glow)" aria-hidden="true">
                   {lines.map((l) => (
                     <g key={l.id} className={`datamap-packets${lineState(l.id)}`}>
                       {Array.from({ length: l.packets }, (_, i) => (
@@ -361,15 +324,7 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                         <>
                           <rect x={-half - 20} y={-20} width={half * 2 + 40} height={40} rx={20} className="datamap-station-hit" />
                           <rect x={-half - 18} y={-18} width={half * 2 + 36} height={36} rx={18} className="datamap-station-pulse is-capsule" />
-                          <rect
-                            x={-half - 12}
-                            y={-12}
-                            width={half * 2 + 24}
-                            height={24}
-                            rx={12}
-                            className="datamap-station-interchange"
-                            filter={sketch ? 'url(#datamap-rough)' : undefined}
-                          />
+                          <rect x={-half - 12} y={-12} width={half * 2 + 24} height={24} rx={12} className="datamap-station-interchange" />
                           <text y={5} textAnchor="middle" className="datamap-capsule-label">
                             {s.name}
                           </text>
@@ -380,14 +335,14 @@ export default function DataMap({ variant = 'neon' }: { variant?: DataMapVariant
                           {interchange ? (
                             <>
                               <circle r="13" className="datamap-station-pulse" />
-                              <circle r="9" className="datamap-station-interchange" filter={sketch ? 'url(#datamap-rough)' : undefined} />
+                              <circle r="9" className="datamap-station-interchange" />
                             </>
                           ) : (
                             <circle
                               r="6"
                               className="datamap-station-stop"
                               style={{ stroke: served[0]?.color }}
-                              filter={sketch ? 'url(#datamap-rough)' : undefined}
+                             
                             />
                           )}
                           <text x={pos.dx} y={pos.dy} textAnchor={pos.anchor} className="datamap-label">
