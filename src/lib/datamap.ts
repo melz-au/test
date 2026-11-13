@@ -7,6 +7,8 @@ export type Station = {
   description: string
   x: number
   y: number
+  /** A long interchange (drawn as a capsule) runs horizontally from x to x2, like Bank–Monument. */
+  x2?: number
   /** Where the label sits relative to the station. */
   label: 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw'
 }
@@ -35,11 +37,19 @@ export const stations: Station[] = [
   { id: 'stream', name: 'Event Stream', description: 'A real-time event bus that ingests every signal as it happens.', x: 280, y: 140, label: 'sw' },
   { id: 'streamproc', name: 'Stream Processing', description: 'Filters, enriches and aggregates events while they are in flight.', x: 380, y: 140, label: 'n' },
   { id: 'catalogue', name: 'Data Catalogue', description: 'Every dataset described, owned and discoverable in one place.', x: 460, y: 60, label: 'e' },
-  { id: 'lake', name: 'Data Lake', description: 'Raw and curated data stored at scale, ready for any workload.', x: 460, y: 320, label: 'sw' },
   { id: 'quality', name: 'Quality Checks', description: 'Automated tests for freshness, completeness and accuracy.', x: 460, y: 500, label: 'w' },
   { id: 'crm', name: 'CRM', description: 'Customer records, contacts and interaction history.', x: 700, y: 60, label: 'e' },
   { id: 'identity', name: 'Identity Resolution', description: 'Matches records from every system into a single customer view.', x: 700, y: 200, label: 'e' },
-  { id: 'warehouse', name: 'Data Warehouse', description: 'Modelled, trusted data that analytics and reporting run on.', x: 700, y: 320, label: 'ne' },
+  {
+    id: 'lakehouse',
+    name: 'Lakehouse',
+    description:
+      'One platform for every kind of data: open, low-cost lake storage with warehouse-grade tables, governance and performance, serving BI, AI and real-time workloads from the same copy.',
+    x: 460,
+    x2: 700,
+    y: 320,
+    label: 's',
+  },
   { id: 'bi', name: 'Self-serve BI', description: 'Teams explore governed data and answer their own questions.', x: 900, y: 320, label: 'n' },
   { id: 'dashboards', name: 'Executive Dashboards', description: 'The few numbers leadership steers by, refreshed automatically.', x: 1130, y: 320, label: 'n' },
   { id: 'feature', name: 'Feature Store', description: 'Reusable model inputs, served the same way for training and live predictions.', x: 700, y: 460, label: 'sw' },
@@ -58,9 +68,9 @@ export const lines: Line[] = [
     name: 'Ingestion line',
     color: 'var(--line-1)',
     throughput: '12.4k events/s',
-    carries: 'Raw signals, landed and modelled for analytics',
-    stops: ['iot', 'stream', 'lake', 'warehouse', 'bi', 'dashboards'],
-    route: ['iot', 'stream', 'lake', 'warehouse', 'bi', 'dashboards'],
+    carries: 'Raw signals, landed in the lakehouse and modelled for analytics',
+    stops: ['iot', 'stream', 'lakehouse', 'bi', 'dashboards'],
+    route: ['iot', 'stream', [460, 320], [700, 320], 'bi', 'dashboards'],
     packets: 9,
     speed: 120,
   },
@@ -70,8 +80,8 @@ export const lines: Line[] = [
     color: 'var(--line-2)',
     throughput: '1.8k records/s',
     carries: 'Customer records, joined into one view',
-    stops: ['crm', 'identity', 'warehouse', 'feature', 'personalisation'],
-    route: ['crm', 'identity', 'warehouse', 'feature', 'personalisation'],
+    stops: ['crm', 'identity', 'lakehouse', 'feature', 'personalisation'],
+    route: ['crm', 'identity', [700, 320], 'feature', 'personalisation'],
     packets: 5,
     speed: 70,
   },
@@ -81,8 +91,8 @@ export const lines: Line[] = [
     color: 'var(--line-3)',
     throughput: '640 features/s',
     carries: 'Features and models, from data to deployed AI',
-    stops: ['lake', 'feature', 'training', 'registry', 'agents'],
-    route: ['lake', [600, 460], 'feature', 'training', 'registry', 'agents'],
+    stops: ['lakehouse', 'feature', 'training', 'registry', 'agents'],
+    route: [[460, 320], [600, 460], 'feature', 'training', 'registry', 'agents'],
     packets: 6,
     speed: 85,
   },
@@ -92,8 +102,8 @@ export const lines: Line[] = [
     color: 'var(--line-4)',
     throughput: '320 checks/s',
     carries: 'Ownership, quality and lineage metadata',
-    stops: ['catalogue', 'lake', 'quality', 'registry', 'audit'],
-    route: ['catalogue', 'lake', 'quality', [540, 580], 'registry', [1040, 640], 'audit'],
+    stops: ['catalogue', 'lakehouse', 'quality', 'registry', 'audit'],
+    route: ['catalogue', [460, 320], 'quality', [540, 580], 'registry', [1040, 640], 'audit'],
     packets: 4,
     speed: 55,
   },
@@ -102,8 +112,8 @@ export const lines: Line[] = [
     name: 'Real-time line',
     color: 'var(--line-5)',
     throughput: '8.9k events/s',
-    carries: 'Live events turned into instant decisions',
-    stops: ['app', 'stream', 'streamproc', 'feature', 'decision', 'alerts'],
+    carries: 'Live events, streamed into the lakehouse and turned into instant decisions',
+    stops: ['app', 'stream', 'streamproc', 'lakehouse', 'feature', 'decision', 'alerts'],
     route: ['app', 'stream', 'streamproc', [580, 140], [580, 340], 'feature', [780, 380], 'decision', 'alerts'],
     packets: 8,
     speed: 150,

@@ -715,3 +715,23 @@ body {
 @media screen and (max-width: 900px) {
   .datamap-swipe { display: block; }
 }
+
+/* The Lakehouse: a long interchange capsule where every line meets */
+.datamap-station-pulse.is-capsule { animation-name: datamap-pulse-capsule; }
+@keyframes datamap-pulse-capsule {
+  0% { transform: scale(0.96, 0.7); opacity: 0.9; }
+  100% { transform: scale(1.08, 1.9); opacity: 0; }
+}
+.datamap-station.is-capsule .datamap-station-interchange {
+  fill: #ffffff;
+  stroke: var(--dm-surface);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 10px rgba(193, 179, 255, 0.55));
+}
+.datamap-capsule-label {
+  fill: var(--dm-surface);
+  font: 800 14px Gantari, sans-serif;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
