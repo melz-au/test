@@ -8,6 +8,7 @@ import NewBlogPost from './pages/NewBlogPost'
 import WorkPost from './pages/WorkPost'
 import { AdminEditPost, AdminHome, AdminNewPost } from './pages/Admin'
 import { AdminWorkEdit, AdminWorkList, AdminWorkNew } from './pages/AdminWork'
+import DataMap from './pages/DataMap'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/data-map" element={<DataMap />} />
         <Route path="/blog" element={<Blog />} />
         {import.meta.env.DEV && <Route path="/blog/new" element={<NewBlogPost />} />}
         <Route path="/blog/:slug" element={<BlogPost />} />
