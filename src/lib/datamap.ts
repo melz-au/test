@@ -26,6 +26,11 @@ export type Line = {
   stops: string[]
   /** Path through the map: station ids and bend points, in order. */
   route: (string | [number, number])[]
+  /**
+   * Drawn dashed. Secondary encoding for a line whose colour is too close to another's when
+   * every line is on screen at once (the validator's all-pairs check), so it never relies on colour alone.
+   */
+  dashed?: boolean
   /** Packets on the line at once, and their speed in viewBox units per second. */
   packets: number
   speed: number
@@ -37,6 +42,32 @@ export const stations: Station[] = [
   { id: 'stream', name: 'Event Stream', description: 'A real-time event bus that ingests every signal as it happens.', x: 280, y: 140, label: 'sw' },
   { id: 'streamproc', name: 'Stream Processing', description: 'Filters, enriches and aggregates events while they are in flight.', x: 380, y: 140, label: 'n' },
   { id: 'catalogue', name: 'Data Catalogue', description: 'Every dataset described, owned and discoverable in one place.', x: 460, y: 60, label: 'e' },
+  {
+    id: 'telemetry',
+    name: 'System Telemetry',
+    description:
+      'Logs, metrics and traces from applications, infrastructure and AI services such as the AI Gateway and agents.',
+    x: 520,
+    y: 100,
+    label: 'e',
+  },
+  {
+    id: 'aiobs',
+    name: 'AI Observability',
+    description:
+      'AI watches every system’s telemetry in the lakehouse: spotting anomalies, drift and failures, and explaining the likely root cause.',
+    x: 290,
+    y: 320,
+    label: 's',
+  },
+  {
+    id: 'incidents',
+    name: 'Incident Response',
+    description: 'Prioritised, explained alerts routed to the right team, with suggested fixes.',
+    x: 110,
+    y: 320,
+    label: 's',
+  },
   { id: 'quality', name: 'Quality Checks', description: 'Automated tests for freshness, completeness and accuracy.', x: 460, y: 500, label: 'w' },
   { id: 'crm', name: 'CRM', description: 'Customer records, contacts and interaction history.', x: 700, y: 60, label: 'e' },
   { id: 'identity', name: 'Identity Resolution', description: 'Matches records from every system into a single customer view.', x: 700, y: 200, label: 'e' },
@@ -126,6 +157,19 @@ export const lines: Line[] = [
     route: ['app', 'stream', 'streamproc', [580, 140], [580, 340], 'feature', [780, 380], 'decision', 'alerts'],
     packets: 8,
     speed: 150,
+  },
+  {
+    id: 'observability',
+    name: 'Observability line',
+    color: 'var(--line-6)',
+    throughput: '2.1k signals/s',
+    carries: 'Telemetry from other systems, collected in the lakehouse and analysed by AI',
+    stops: ['telemetry', 'lakehouse', 'aiobs', 'incidents'],
+    // Down into the lakehouse from above, then out of its west end.
+    route: ['telemetry', [520, 320], 'aiobs', 'incidents'],
+    dashed: true,
+    packets: 5,
+    speed: 90,
   },
 ]
 

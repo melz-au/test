@@ -163,7 +163,11 @@ export default function DataMap() {
                 onPointerEnter={() => setHoverLine(l.id)}
                 onPointerLeave={() => setHoverLine(null)}
               >
-                <span className="datamap-legend-line" style={{ background: l.color }} aria-hidden="true" />
+                <span
+                  className={`datamap-legend-line${l.dashed ? ' is-dashed' : ''}`}
+                  style={{ ['--swatch' as string]: l.color }}
+                  aria-hidden="true"
+                />
                 <span className="datamap-legend-name">{l.name}</span>
                 <span className="datamap-legend-value">{l.throughput}</span>
               </button>
@@ -223,7 +227,7 @@ export default function DataMap() {
                 {/* Soft glow under each line */}
                 <g filter="url(#datamap-glow)" aria-hidden="true">
                   {lines.map((l) => (
-                    <path key={l.id} d={paths.get(l.id)} className={`datamap-line-glow${lineState(l.id)}`} style={{ stroke: l.color }} />
+                    <path key={l.id} d={paths.get(l.id)} className={`datamap-line-glow${l.dashed ? ' is-dashed' : ''}${lineState(l.id)}`} style={{ stroke: l.color }} />
                   ))}
                 </g>
 
@@ -235,7 +239,7 @@ export default function DataMap() {
                       if (el) pathRefs.current.set(l.id, el)
                     }}
                     d={paths.get(l.id)}
-                    className={`datamap-line${lineState(l.id)}`}
+                    className={`datamap-line${l.dashed ? ' is-dashed' : ''}${lineState(l.id)}`}
                     style={{ stroke: l.color }}
                   />
                 ))}
