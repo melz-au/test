@@ -27,10 +27,11 @@ export type Line = {
   /** Path through the map: station ids and bend points, in order. */
   route: (string | [number, number])[]
   /**
-   * Drawn dashed. Secondary encoding for a line whose colour is too close to another's when
-   * every line is on screen at once (the validator's all-pairs check), so it never relies on colour alone.
+   * A non-colour pattern for a line whose colour is too close to another's when every line is on
+   * screen at once (the validator's all-pairs check), so it never relies on colour alone.
+   * 'dashed' = broken line; 'double' = coloured edges with a dark centre stripe.
    */
-  dashed?: boolean
+  pattern?: 'dashed' | 'double'
   /** Packets on the line at once, and their speed in viewBox units per second. */
   packets: number
   speed: number
@@ -68,6 +69,38 @@ export const stations: Station[] = [
     y: 320,
     label: 's',
   },
+  {
+    id: 'iam',
+    name: 'Identity & Access',
+    description: 'Who can see what: roles, single sign-on and least-privilege access policies for people, services and AI agents.',
+    x: 1130,
+    y: 250,
+    label: 'n',
+  },
+  {
+    id: 'classify',
+    name: 'Data Classification',
+    description: 'Sensitive and personal data is detected and tagged automatically, so masking and access rules follow it everywhere.',
+    x: 900,
+    y: 250,
+    label: 'n',
+  },
+  {
+    id: 'threat',
+    name: 'Threat Detection',
+    description: 'Every access to the lakehouse and the AI Gateway is checked for unusual behaviour, data exfiltration and prompt injection.',
+    x: 650,
+    y: 520,
+    label: 'w',
+  },
+  {
+    id: 'soc',
+    name: 'Security Operations',
+    description: 'The security team investigates, contains and reports threats, with the evidence already gathered.',
+    x: 650,
+    y: 650,
+    label: 'w',
+  },
   { id: 'quality', name: 'Quality Checks', description: 'Automated tests for freshness, completeness and accuracy.', x: 460, y: 500, label: 'w' },
   { id: 'crm', name: 'CRM', description: 'Customer records, contacts and interaction history.', x: 700, y: 60, label: 'e' },
   { id: 'identity', name: 'Identity Resolution', description: 'Matches records from every system into a single customer view.', x: 700, y: 200, label: 'e' },
@@ -83,7 +116,7 @@ export const stations: Station[] = [
   },
   { id: 'bi', name: 'Self-serve BI', description: 'Teams explore governed data and answer their own questions.', x: 900, y: 320, label: 'n' },
   { id: 'dashboards', name: 'Executive Dashboards', description: 'The few numbers leadership steers by, refreshed automatically.', x: 1130, y: 320, label: 'n' },
-  { id: 'feature', name: 'Feature Store', description: 'Reusable model inputs, served the same way for training and live predictions.', x: 700, y: 460, label: 'sw' },
+  { id: 'feature', name: 'Feature Store', description: 'Reusable model inputs, served the same way for training and live predictions.', x: 700, y: 460, label: 'se' },
   { id: 'personalisation', name: 'Personalisation', description: 'Tailored content and offers for each customer, in real time.', x: 700, y: 650, label: 'e' },
   { id: 'training', name: 'Model Training', description: 'Models are trained and evaluated on curated features.', x: 860, y: 460, label: 'n' },
   { id: 'registry', name: 'Model Registry', description: 'Versioned, approved models with full lineage back to their data.', x: 980, y: 580, label: 'sw' },
@@ -167,9 +200,22 @@ export const lines: Line[] = [
     stops: ['telemetry', 'lakehouse', 'aiobs', 'incidents'],
     // Down into the lakehouse from above, then out of its west end.
     route: ['telemetry', [520, 320], 'aiobs', 'incidents'],
-    dashed: true,
+    pattern: 'dashed',
     packets: 5,
     speed: 90,
+  },
+  {
+    id: 'security',
+    name: 'Security line',
+    color: 'var(--line-7)',
+    throughput: '4.6k access checks/s',
+    carries: 'Access policies and classifications enforced at the lakehouse, and every access checked for threats',
+    stops: ['iam', 'classify', 'lakehouse', 'threat', 'soc'],
+    // In from the top right, down through the lakehouse, out underneath.
+    route: ['iam', 'classify', [650, 250], [650, 320], 'threat', 'soc'],
+    pattern: 'double',
+    packets: 6,
+    speed: 100,
   },
 ]
 
