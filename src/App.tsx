@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import ScrollManager from './components/ScrollManager'
 import Home from './pages/Home'
 import About from './pages/About'
@@ -18,8 +18,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/data-map" element={<DataMap key="neon" />} />
-        <Route path="/data-map/sketch" element={<DataMap key="sketch" variant="sketch" />} />
+        <Route path="/data-map" element={<DataMap />} />
+        {/* The hand-drawn version was removed; send old links to the map. */}
+        <Route path="/data-map/sketch" element={<Navigate to="/data-map" replace />} />
         <Route path="/blog" element={<Blog />} />
         {import.meta.env.DEV && <Route path="/blog/new" element={<NewBlogPost />} />}
         <Route path="/blog/:slug" element={<BlogPost />} />
