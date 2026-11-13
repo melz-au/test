@@ -281,38 +281,54 @@ export default function DataMap() {
                   const served = linesAt(s.id)
                   const interchange = served.length > 1
                   const pos = LABEL[s.label]
+                  // A long interchange (the Lakehouse) is drawn as a capsule spanning x..x2.
+                  const half = s.x2 !== undefined ? (s.x2 - s.x) / 2 : 0
+                  const cx = s.x + half
                   return (
                     <g
                       key={s.id}
-                      className={`datamap-station${interchange ? ' is-interchange' : ''}${stationDimmed(s.id) ? ' is-dimmed' : ''}${hoverStation === s.id ? ' is-hover' : ''}`}
-                      transform={`translate(${s.x} ${s.y})`}
+                      className={`datamap-station${interchange ? ' is-interchange' : ''}${half ? ' is-capsule' : ''}${stationDimmed(s.id) ? ' is-dimmed' : ''}${hoverStation === s.id ? ' is-hover' : ''}`}
+                      transform={`translate(${cx} ${s.y})`}
                       tabIndex={0}
                       role="button"
                       aria-label={`${s.name}. ${s.description} Lines: ${served.map((l) => l.name).join(', ')}.`}
                       onPointerEnter={() => {
                         setHoverStation(s.id)
                         setHoverLine(null)
-                        tipAt(s.x, s.y, <StationTip station={s} />)
+                        tipAt(cx, s.y, <StationTip station={s} />)
                       }}
                       onPointerLeave={clearHover}
                       onFocus={() => {
                         setHoverStation(s.id)
-                        tipAt(s.x, s.y, <StationTip station={s} />)
+                        tipAt(cx, s.y, <StationTip station={s} />)
                       }}
                       onBlur={clearHover}
                     >
-                      <circle r="20" className="datamap-station-hit" />
-                      {interchange ? (
+                      {half ? (
                         <>
-                          <circle r="13" className="datamap-station-pulse" />
-                          <circle r="9" className="datamap-station-interchange" />
+                          <rect x={-half - 20} y={-20} width={half * 2 + 40} height={40} rx={20} className="datamap-station-hit" />
+                          <rect x={-half - 18} y={-18} width={half * 2 + 36} height={36} rx={18} className="datamap-station-pulse is-capsule" />
+                          <rect x={-half - 12} y={-12} width={half * 2 + 24} height={24} rx={12} className="datamap-station-interchange" />
+                          <text y={5} textAnchor="middle" className="datamap-capsule-label">
+                            {s.name}
+                          </text>
                         </>
                       ) : (
-                        <circle r="6" className="datamap-station-stop" style={{ stroke: served[0]?.color }} />
+                        <>
+                          <circle r="20" className="datamap-station-hit" />
+                          {interchange ? (
+                            <>
+                              <circle r="13" className="datamap-station-pulse" />
+                              <circle r="9" className="datamap-station-interchange" />
+                            </>
+                          ) : (
+                            <circle r="6" className="datamap-station-stop" style={{ stroke: served[0]?.color }} />
+                          )}
+                          <text x={pos.dx} y={pos.dy} textAnchor={pos.anchor} className="datamap-label">
+                            {s.name}
+                          </text>
+                        </>
                       )}
-                      <text x={pos.dx} y={pos.dy} textAnchor={pos.anchor} className="datamap-label">
-                        {s.name}
-                      </text>
                     </g>
                   )
                 })}
