@@ -536,6 +536,7 @@ body {
   --line-4: #c98500;
   --line-5: #d55181;
   --line-6: #0ca30c; /* drawn dashed: too close to --line-3 / --line-2 when all lines show at once */
+  --line-7: #9085e9; /* drawn double: too close to --line-1 when all lines show at once */
   --dm-surface: #0a061a;
   --dm-ink: #f0efec;
   --dm-ink-2: #c3c2b7;
@@ -587,6 +588,10 @@ body {
 .datamap-legend-item.is-selected { border-color: var(--purple-light); background: rgba(150, 171, 255, 0.1); }
 .datamap-legend-item.is-off { opacity: 0.45; }
 .datamap-legend-line { width: 18px; height: 4px; border-radius: 2px; background: var(--swatch); }
+.datamap-legend-line.is-double {
+  height: 7px;
+  background: linear-gradient(var(--swatch) 0 2.5px, var(--dm-surface) 2.5px 4.5px, var(--swatch) 4.5px 7px);
+}
 .datamap-legend-line.is-dashed {
   width: 20px;
   background: repeating-linear-gradient(90deg, var(--swatch) 0 6px, transparent 6px 9px);
@@ -626,6 +631,9 @@ body {
 .datamap-line { stroke-width: 7; }
 .datamap-line.is-dashed,
 .datamap-line-glow.is-dashed { stroke-dasharray: 14 9; stroke-linecap: butt; }
+.datamap-line.is-double { stroke-width: 10; }
+.datamap-line-stripe { fill: none; stroke: var(--dm-surface); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; transition: opacity 0.25s; }
+.datamap-line-stripe.is-dimmed { opacity: 0.15; }
 .datamap-line-glow { stroke-width: 14; opacity: 0.35; }
 .datamap-line.is-dimmed,
 .datamap-packets.is-dimmed { opacity: 0.15; }
@@ -741,4 +749,165 @@ body {
   letter-spacing: 3px;
   text-transform: uppercase;
   pointer-events: none;
+}
+
+/* ---------- Data map: style switch ---------- */
+.datamap-style-switch {
+  display: inline-flex;
+  gap: 4px;
+  margin-top: 20px;
+  padding: 4px;
+  border: 1px solid rgba(150, 171, 255, 0.25);
+  border-radius: 999px;
+}
+.datamap-style-switch a {
+  padding: 4px 14px;
+  border-radius: 999px;
+  color: var(--dm-ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.datamap-style-switch a:hover { color: var(--dm-ink); }
+.datamap-style-switch a[aria-current='page'] { background: var(--purple-light); color: #0a061a; }
+
+/* ---------- Data map: hand-drawn ("sketch") version, /data-map/sketch ---------- */
+/* Warm paper page behind the map. */
+.body-sketch { background-color: #fbf6ea; }
+
+.datamap.is-sketch {
+  /* Categorical light-mode slots 1-7, validated against the paper (#fbf6ea). Orange, aqua, yellow and
+     pink are under 3:1 against paper, so every line also gets an ink outline (the casing below),
+     and lines are named in the legend, tooltips and table view. */
+  --line-1: #2a78d6;
+  --line-2: #eb6834;
+  --line-3: #1baf7a;
+  --line-4: #eda100;
+  --line-5: #e87ba4;
+  --line-6: #008300;
+  --line-7: #6250d6;
+  --dm-surface: #fbf6ea;
+  --dm-ink: #2b2620;
+  --dm-ink-2: #4f473d;
+  --dm-muted: #7a7064;
+  --dm-hand: 'Patrick Hand', 'Comic Neue', 'Segoe Print', cursive;
+  color: var(--dm-ink);
+  font-family: var(--dm-hand);
+}
+.datamap.is-sketch .datamap-kicker {
+  color: #6250d6;
+  font-family: var(--dm-hand);
+  letter-spacing: 2px;
+  font-size: 16px;
+}
+.datamap.is-sketch .datamap-title {
+  font: 700 76px/80px Caveat, var(--dm-hand);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--dm-ink);
+  transform: rotate(-1deg);
+  transform-origin: left;
+}
+.datamap.is-sketch .datamap-intro { color: var(--dm-ink-2); font-size: 20px; line-height: 30px; }
+
+.datamap.is-sketch .datamap-style-switch { border: 1.5px solid var(--dm-ink); border-radius: 14px 18px 12px 16px; }
+.datamap.is-sketch .datamap-style-switch a { font: 18px var(--dm-hand); color: var(--dm-ink-2); border-radius: 10px; }
+.datamap.is-sketch .datamap-style-switch a[aria-current='page'] { background: var(--dm-ink); color: var(--dm-surface); }
+
+.datamap.is-sketch .datamap-legend-item {
+  background: #fffdf6;
+  border: 1.5px solid var(--dm-ink);
+  border-radius: 16px 12px 18px 10px;
+  color: var(--dm-ink);
+  font: 17px/22px var(--dm-hand);
+  box-shadow: 2px 2px 0 rgba(43, 38, 32, 0.15);
+}
+.datamap.is-sketch .datamap-legend-item:nth-child(even) { border-radius: 12px 18px 10px 16px; }
+.datamap.is-sketch .datamap-legend-item:hover { border-color: var(--dm-ink); background: #fff; }
+.datamap.is-sketch .datamap-legend-item.is-selected { background: #efe7ff; border-color: #6250d6; }
+.datamap.is-sketch .datamap-legend-line { box-shadow: 0 0 0 1px var(--dm-ink); }
+.datamap.is-sketch .datamap-legend-line.is-dashed { box-shadow: none; }
+.datamap.is-sketch .datamap-legend-value { color: var(--dm-muted); }
+.datamap.is-sketch .datamap-action {
+  border: 1.5px solid var(--dm-ink);
+  border-radius: 12px 16px 10px 14px;
+  color: var(--dm-ink);
+  font: 17px var(--dm-hand);
+}
+.datamap.is-sketch .datamap-action:hover { background: rgba(43, 38, 32, 0.06); }
+
+.datamap.is-sketch .datamap-scroll { border-radius: 6px; }
+.datamap.is-sketch .datamap-stage {
+  background: var(--dm-surface);
+  border: 2px solid var(--dm-ink);
+  border-radius: 10px 14px 8px 16px;
+  box-shadow: 4px 5px 0 rgba(43, 38, 32, 0.12);
+}
+
+/* Ink casing under each line, then the colour on top. */
+.datamap-line-casing {
+  fill: none;
+  stroke: var(--dm-ink);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 0.25s;
+}
+.datamap-line-casing.is-double { stroke-width: 13; }
+/* Dash the outline in step with the line so the gaps show paper, not ink. */
+.datamap-line-casing.is-dashed { stroke-dasharray: 14 9; stroke-linecap: butt; }
+.datamap-line-casing.is-dimmed { opacity: 0.12; }
+.datamap.is-sketch .datamap-line { stroke-width: 6.5; }
+.datamap.is-sketch .datamap-line.is-double { stroke-width: 9.5; }
+.datamap.is-sketch .datamap-line.is-dimmed,
+.datamap.is-sketch .datamap-packets.is-dimmed,
+.datamap.is-sketch .datamap-line-stripe.is-dimmed { opacity: 0.18; }
+
+/* Packets: ink-outlined dots instead of glowing ones. */
+.datamap.is-sketch .datamap-packet-halo { opacity: 1; stroke: var(--dm-ink); stroke-width: 1.6; transform: scale(0.75); }
+.datamap.is-sketch .datamap-packet-core { fill: var(--dm-surface); transform: scale(0.8); }
+
+/* Stations */
+.datamap.is-sketch .datamap-station-stop { fill: #fffdf6; stroke-width: 3; }
+.datamap.is-sketch .datamap-station-interchange { fill: #fffdf6; stroke: var(--dm-ink); stroke-width: 2.6; }
+.datamap.is-sketch .datamap-station.is-capsule .datamap-station-interchange { fill: #fffdf6; stroke: var(--dm-ink); stroke-width: 2.6; filter: none; }
+.datamap.is-sketch .datamap-station-pulse { display: none; }
+.datamap.is-sketch .datamap-station.is-hover .datamap-station-stop,
+.datamap.is-sketch .datamap-station:focus-visible .datamap-station-stop { fill: #ffe9a8; }
+.datamap.is-sketch .datamap-station.is-hover .datamap-station-interchange { fill: #ffe9a8; }
+.datamap.is-sketch .datamap-station:focus-visible .datamap-station-hit { stroke: #6250d6; stroke-dasharray: 4 3; }
+.datamap.is-sketch .datamap-label {
+  fill: var(--dm-ink-2);
+  font: 19px var(--dm-hand);
+  stroke: var(--dm-surface);
+  stroke-width: 5px;
+}
+.datamap.is-sketch .datamap-station.is-interchange .datamap-label { fill: var(--dm-ink); font-weight: 400; }
+.datamap.is-sketch .datamap-station.is-hover .datamap-label,
+.datamap.is-sketch .datamap-station:focus-visible .datamap-label { fill: var(--dm-ink); }
+.datamap.is-sketch .datamap-capsule-label { fill: var(--dm-ink); font: 21px Caveat, var(--dm-hand); font-weight: 700; letter-spacing: 3px; }
+
+/* Tooltip: a slightly tilted paper note. */
+.datamap.is-sketch .datamap-tip {
+  background: #fffdf6;
+  border: 1.5px solid var(--dm-ink);
+  border-radius: 12px 16px 10px 14px;
+  box-shadow: 3px 4px 0 rgba(43, 38, 32, 0.15);
+  backdrop-filter: none;
+  font: 17px/22px var(--dm-hand);
+  rotate: -0.6deg;
+}
+.datamap.is-sketch .datamap-tip-title { font-family: Caveat, var(--dm-hand); font-size: 24px; font-weight: 700; }
+.datamap.is-sketch .datamap-tip-meta { font-size: 15px; letter-spacing: 0; }
+.datamap.is-sketch .datamap-swatch { box-shadow: 0 0 0 1.5px var(--dm-ink); }
+
+.datamap.is-sketch .datamap-table caption { color: var(--dm-ink); font: 700 28px Caveat, var(--dm-hand); }
+.datamap.is-sketch .datamap-table th,
+.datamap.is-sketch .datamap-table td { color: var(--dm-ink-2); border-bottom: 1.5px dashed rgba(43, 38, 32, 0.25); font-size: 17px; }
+.datamap.is-sketch .datamap-table thead th { color: var(--dm-muted); font-size: 15px; }
+.datamap.is-sketch .datamap-table tbody th { color: var(--dm-ink); }
+.datamap.is-sketch .datamap-note,
+.datamap.is-sketch .datamap-swipe { color: var(--dm-muted); font-size: 16px; }
+@media screen and (max-width: 767px) {
+  .datamap.is-sketch .datamap-title { font-size: 56px; line-height: 60px; }
 }

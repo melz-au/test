@@ -18,7 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/data-map" element={<DataMap />} />
+        <Route path="/data-map" element={<DataMap key="neon" />} />
+        <Route path="/data-map/sketch" element={<DataMap key="sketch" variant="sketch" />} />
         <Route path="/blog" element={<Blog />} />
         {import.meta.env.DEV && <Route path="/blog/new" element={<NewBlogPost />} />}
         <Route path="/blog/:slug" element={<BlogPost />} />
