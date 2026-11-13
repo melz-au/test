@@ -535,6 +535,7 @@ body {
   --line-3: #199e70;
   --line-4: #c98500;
   --line-5: #d55181;
+  --line-6: #0ca30c; /* drawn dashed: too close to --line-3 / --line-2 when all lines show at once */
   --dm-surface: #0a061a;
   --dm-ink: #f0efec;
   --dm-ink-2: #c3c2b7;
@@ -585,7 +586,11 @@ body {
 .datamap-legend-item:hover { border-color: rgba(255, 255, 255, 0.3); }
 .datamap-legend-item.is-selected { border-color: var(--purple-light); background: rgba(150, 171, 255, 0.1); }
 .datamap-legend-item.is-off { opacity: 0.45; }
-.datamap-legend-line { width: 18px; height: 4px; border-radius: 2px; }
+.datamap-legend-line { width: 18px; height: 4px; border-radius: 2px; background: var(--swatch); }
+.datamap-legend-line.is-dashed {
+  width: 20px;
+  background: repeating-linear-gradient(90deg, var(--swatch) 0 6px, transparent 6px 9px);
+}
 .datamap-legend-value { color: var(--dm-muted); font-variant-numeric: tabular-nums; }
 .datamap-actions { display: flex; gap: 8px; }
 .datamap-action {
@@ -619,6 +624,8 @@ body {
   transition: opacity 0.25s;
 }
 .datamap-line { stroke-width: 7; }
+.datamap-line.is-dashed,
+.datamap-line-glow.is-dashed { stroke-dasharray: 14 9; stroke-linecap: butt; }
 .datamap-line-glow { stroke-width: 14; opacity: 0.35; }
 .datamap-line.is-dimmed,
 .datamap-packets.is-dimmed { opacity: 0.15; }
