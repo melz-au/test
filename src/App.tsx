@@ -18,7 +18,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/data-map" element={<DataMap />} />
+        <Route path="/data-map" element={<DataMap key="metro" />} />
+        <Route path="/data-map/organism" element={<DataMap key="organism" variant="organism" />} />
         {/* The hand-drawn version was removed; send old links to the map. */}
         <Route path="/data-map/sketch" element={<Navigate to="/data-map" replace />} />
         <Route path="/blog" element={<Blog />} />
