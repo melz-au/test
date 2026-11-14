@@ -1,0 +1,49 @@
+# Operational reference values shared by the generator (TypeScript) and the lakehouse (Python).
+# Single source of truth: `npm run gen` writes both sides from this file.
+# All times are local to the customer (Australia/Adelaide, which observes daylight saving).
+customer:
+  id: MFW
+  name: Murray Flats Water
+timezone: Australia/Adelaide
+
+# Weekdays use ISO numbering: 1 = Monday ... 7 = Sunday.
+business_hours:
+  weekdays: [1, 2, 3, 4, 5]
+  start_hour: 7
+  end_hour: 19
+change_window:            # approved window for PLC logic and firmware changes
+  weekday: 2              # Tuesday
+  start_hour: 10
+  end_hour: 14
+vendor_maintenance:       # routine weekly vendor session per site
+  weekday: 3              # Wednesday
+  start_hour: 10
+  duration_minutes: 90
+
+# Normal operating bands, keyed by tag class (tag without the site prefix, pump number removed).
+process_bands:
+  CL2.DOSE_MGL:      { min: 0.5, max: 1.5,  unit: mg/L }
+  CL2.SETPOINT_MGL:  { min: 0.5, max: 1.5,  unit: mg/L }
+  MAIN.PRESSURE_KPA: { min: 200, max: 700,  unit: kPa }
+  RES.LEVEL_PCT:     { min: 10,  max: 98,   unit: "%" }
+  PUMP.FLOW_LPS:     { min: 0,   max: 60,   unit: L/s }
+
+# Vendors (fictional) the customer has approved. Anything else in the inventory is "unknown vendor".
+known_vendors:
+  - Wattle Controls
+  - Bunyip Automation
+  - Saltbush Systems
+  - Coolabah Networks
+  - Mallee Instruments
+engineering_asset_types: [engineering_workstation]
+
+# Detection thresholds used by gold_detections.
+detection:
+  out_of_band_minutes: 10
+  mfa_fatigue_min_denials: 3
+  mfa_fatigue_window_minutes: 15
+  port_scan_min_targets: 10
+  port_scan_window_minutes: 5
+  baseline_learning_hours: 24
+  incident_gap_minutes: 120
+  scorecard_grace_minutes: 120

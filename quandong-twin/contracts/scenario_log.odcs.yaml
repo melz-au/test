@@ -1,0 +1,134 @@
+# ODCS v3.2.0 data contract — single source of truth for the `scenario_log` feed.
+# Generated code (TypeScript types, JSON Schema, Spark schemas, pipeline expectations) derives from this file:
+# edit here, then run `npm run gen`.
+apiVersion: v3.2.0
+kind: DataContract
+id: quandong-mfw-scenario-log
+name: scenario_log
+version: 1.0.0
+status: active
+domain: ot-security-monitoring
+tenant: quandong-cyber
+dataProduct: murray-flats-water-ot-twin
+description:
+  purpose: "Ground truth for planted incident scenarios. RESTRICTED: used only to score detections (gold_detection_scorecard). Detection logic must never read it."
+  usage: Landed as newline-delimited JSON by the Cloudflare generator; ingested by the Lakeflow pipeline (bronze_scenario_log -> silver_scenario_log).
+  limitations: Entirely synthetic. Murray Flats Water, its sites, assets, users and vendors are fictional.
+tags: [synthetic, ot-security, murray-flats-water, restricted, ground-truth]
+customProperties:
+  - property: grain
+    value: "One row per step of an injected incident scenario."
+  - property: landingFolder
+    value: _ground_truth/scenario_log
+schema:
+  - name: scenario_log
+    physicalName: scenario_log
+    physicalType: ndjson
+    logicalType: object
+    description: "Ground truth for planted incident scenarios. RESTRICTED: used only to score detections (gold_detection_scorecard). Detection logic must never read it."
+    properties:
+      - name: event_id
+        logicalType: string
+        physicalType: STRING
+        logicalTypeOptions:
+          format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        required: true
+        primaryKey: true
+        unique: true
+        description: Deterministic UUID (version 8, hash-derived) identifying the event. Used for deduplication.
+      - name: event_ts
+        logicalType: timestamp
+        physicalType: TIMESTAMP
+        required: true
+        description: When the event happened, Coordinated Universal Time (UTC), ISO 8601 with millisecond precision and a Z suffix.
+      - name: customer_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[A-Z]{2,6}$"
+        description: Quandong customer code. MFW = Murray Flats Water (fictional).
+      - name: site_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(PS[0-9]{2}|HO)$"
+        description: Pump station (PS01 to PS40) or HO for head office.
+      - name: feed
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Name of the feed this event belongs to.
+      - name: schema_version
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        description: Semantic version of the contract the event was produced against.
+      - name: generator_run_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Identifier of the generator deployment (seed and configuration) that produced the event.
+      - name: scenario_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: "Identifier of the scenario instance (ground_truth_scenario_id)."
+      - name: scenario_name
+        logicalType: string
+        physicalType: STRING
+        required: true
+        enum:
+          - value: rogue_setpoint
+          - value: rogue_device
+          - value: unauthorised_logic_change
+        description: "Scenario type."
+      - name: step
+        logicalType: integer
+        physicalType: INT
+        required: true
+        logicalTypeOptions:
+          minimum: 1
+        description: "Step number within the scenario, from 1."
+      - name: step_name
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: "Short name of the step, e.g. mfa_fatigue."
+      - name: scenario_start_ts
+        logicalType: timestamp
+        physicalType: TIMESTAMP
+        required: true
+        description: "When the scenario started (UTC)."
+      - name: mitre_attack_ics_technique
+        logicalType: string
+        physicalType: STRING
+        required: false
+        logicalTypeOptions:
+          pattern: "^T0[0-9]{3}$"
+        description: "Technique the step represents."
+      - name: expected_rule_ids
+        logicalType: array
+        physicalType: ARRAY<STRING>
+        required: true
+        description: "Quandong detection rule IDs expected to fire on this step."
+        items:
+          logicalType: string
+          physicalType: STRING
+      - name: evidence_event_ids
+        logicalType: array
+        physicalType: ARRAY<STRING>
+        required: true
+        description: "event_id values of the generated events that make up this step."
+        items:
+          logicalType: string
+          physicalType: STRING
+      - name: description
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: "What the step does."

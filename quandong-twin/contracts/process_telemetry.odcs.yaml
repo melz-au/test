@@ -1,0 +1,171 @@
+# ODCS v3.2.0 data contract — single source of truth for the `process_telemetry` feed.
+# Generated code (TypeScript types, JSON Schema, Spark schemas, pipeline expectations) derives from this file:
+# edit here, then run `npm run gen`.
+apiVersion: v3.2.0
+kind: DataContract
+id: quandong-mfw-process-telemetry
+name: process_telemetry
+version: 1.0.0
+status: active
+domain: ot-security-monitoring
+tenant: quandong-cyber
+dataProduct: murray-flats-water-ot-twin
+description:
+  purpose: "Process values sampled from the site controllers via the historian."
+  usage: Landed as newline-delimited JSON by the Cloudflare generator; ingested by the Lakeflow pipeline (bronze_process_telemetry -> silver_process_telemetry).
+  limitations: Entirely synthetic. Murray Flats Water, its sites, assets, users and vendors are fictional.
+tags: [synthetic, ot-security, murray-flats-water]
+customProperties:
+  - property: grain
+    value: "One row per tag per minute."
+  - property: landingFolder
+    value: process_telemetry
+schema:
+  - name: process_telemetry
+    physicalName: process_telemetry
+    physicalType: ndjson
+    logicalType: object
+    description: "Process values sampled from the site controllers via the historian."
+    properties:
+      - name: event_id
+        logicalType: string
+        physicalType: STRING
+        logicalTypeOptions:
+          format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        required: true
+        primaryKey: true
+        unique: true
+        description: Deterministic UUID (version 8, hash-derived) identifying the event. Used for deduplication.
+      - name: event_ts
+        logicalType: timestamp
+        physicalType: TIMESTAMP
+        required: true
+        description: When the event happened, Coordinated Universal Time (UTC), ISO 8601 with millisecond precision and a Z suffix.
+      - name: customer_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[A-Z]{2,6}$"
+        description: Quandong customer code. MFW = Murray Flats Water (fictional).
+      - name: site_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(PS[0-9]{2}|HO)$"
+        description: Pump station (PS01 to PS40) or HO for head office.
+      - name: feed
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Name of the feed this event belongs to.
+      - name: schema_version
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        description: Semantic version of the contract the event was produced against.
+      - name: generator_run_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Identifier of the generator deployment (seed and configuration) that produced the event.
+      - name: tag
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(PS[0-9]{2}|HO)\\.(PUMP[0-9]\\.(FLOW_LPS|RUN)|CL2\\.(DOSE_MGL|SETPOINT_MGL)|RES\\.LEVEL_PCT|MAIN\\.PRESSURE_KPA)$"
+        description: "Historian tag, {site}.{equipment}.{measurement}, e.g. PS03.CL2.DOSE_MGL."
+      - name: asset_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(PS[0-9]{2}|HO)-[A-Z]{2,4}-[0-9]{2}$"
+        description: "Controller the tag is read from."
+      - name: value
+        logicalType: number
+        physicalType: DOUBLE
+        required: false
+        description: "Sampled value. Null when quality is bad."
+      - name: unit
+        logicalType: string
+        physicalType: STRING
+        required: true
+        enum:
+          - value: L/s
+          - value: mg/L
+          - value: "%"
+          - value: kPa
+          - value: state
+        description: "Engineering unit."
+      - name: quality
+        logicalType: string
+        physicalType: STRING
+        required: true
+        enum:
+          - value: good
+          - value: bad
+          - value: uncertain
+        description: "OPC-style quality of the sample."
+    quality:
+      - id: bad_quality_has_no_value
+        type: custom
+        engine: databricks-expectation
+        implementation: "quality <> 'bad' OR value IS NULL"
+        severity: error
+        dimension: consistency
+        description: "Bad-quality samples carry no value."
+      - id: good_quality_has_value
+        type: custom
+        engine: databricks-expectation
+        implementation: "quality = 'bad' OR value IS NOT NULL"
+        severity: error
+        dimension: completeness
+        description: "Good and uncertain samples carry a value."
+      - id: flow_physical_range
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.FLOW_LPS' OR value IS NULL OR value BETWEEN 0 AND 80"
+        severity: warning
+        dimension: accuracy
+        description: "Pump flow within instrument range 0-80 L/s."
+      - id: run_is_binary
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.RUN' OR value IS NULL OR value IN (0, 1)"
+        severity: warning
+        dimension: accuracy
+        description: "Pump run state is 0 or 1."
+      - id: cl2_dose_physical_range
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.CL2.DOSE_MGL' OR value IS NULL OR value BETWEEN 0 AND 5"
+        severity: warning
+        dimension: accuracy
+        description: "Chlorine residual within analyser range 0-5 mg/L."
+      - id: cl2_dose_operating_band
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.CL2.DOSE_MGL' OR value IS NULL OR value BETWEEN 0.5 AND 1.5"
+        severity: warning
+        dimension: accuracy
+        description: "Chlorine residual within the 0.5-1.5 mg/L operating band. Breaches can be attacks, so rows are kept."
+      - id: level_physical_range
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.RES.LEVEL_PCT' OR value IS NULL OR value BETWEEN 0 AND 100"
+        severity: warning
+        dimension: accuracy
+        description: "Reservoir level is a percentage."
+      - id: pressure_physical_range
+        type: custom
+        engine: databricks-expectation
+        implementation: "tag NOT LIKE '%.MAIN.PRESSURE_KPA' OR value IS NULL OR value BETWEEN 0 AND 1000"
+        severity: warning
+        dimension: accuracy
+        description: "Main pressure within transmitter range 0-1000 kPa."

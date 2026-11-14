@@ -1,0 +1,38 @@
+{
+  "name": "quandong-twin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Quandong Cyber OT digital twin: Cloudflare data generator and Databricks lakehouse (synthetic data only).",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "gen": "node scripts/codegen.ts",
+    "gen:check": "node scripts/codegen.ts --check",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:do": "vitest run --config generator/vitest.workers.config.ts",
+    "smoke": "node scripts/smoke.ts",
+    "backfill": "node scripts/backfill.ts",
+    "local-files-api": "node scripts/local-files-api.ts",
+    "dev": "wrangler dev --config generator/wrangler.jsonc",
+    "deploy": "wrangler deploy --config generator/wrangler.jsonc",
+    "check": "npm run gen:check && npm run typecheck && npm run lint && npm test"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.8.2",
+    "@cloudflare/workers-types": "^5.20261114.1",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.19.2",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "eslint": "^10.15.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vitest": "~4.1.12",
+    "wrangler": "^4.162.0",
+    "yaml": "^2.9.1"
+  }
+}
