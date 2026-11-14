@@ -5,7 +5,7 @@ resources:
     quandong_twin:
       name: quandong-twin-lakehouse
       catalog: ${var.catalog}
-      schema: ${resources.schemas.quandong_twin.name}
+      schema: ${resources.schemas.quandong_schema.name}
       serverless: true
       continuous: false
       channel: CURRENT
@@ -20,4 +20,4 @@ resources:
       event_log:
         name: quandong_pipeline_event_log
         catalog: ${var.catalog}
-        schema: ${resources.schemas.quandong_twin.name}
+        schema: ${resources.schemas.quandong_schema.name}
