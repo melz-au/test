@@ -13,6 +13,7 @@ export default tseslint.config(
     rules: {
       "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
       "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
     },
   },
   { files: ["**/*.js"], ...tseslint.configs.disableTypeChecked },

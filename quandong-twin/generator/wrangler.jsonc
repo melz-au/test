@@ -1,0 +1,29 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Quandong Cyber OT digital twin — data generator (synthetic data only).
+  "name": "quandong-twin-generator",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  // Every 5 minutes: each site's Durable Object flushes complete 5-minute windows to Databricks.
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "durable_objects": {
+    "bindings": [{ "name": "SITE_TWIN", "class_name": "SiteTwin" }]
+  },
+  // Workers Free only supports SQLite-backed Durable Objects.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["SiteTwin"] }],
+  "vars": {
+    "SIM_SEED": "quandong-mfw-1",
+    "SITE_COUNT": "5",
+    // Simulated minutes per alarm. 1 for up to ~10 sites; use 5 for 40 sites (see README quotas).
+    "TICK_MINUTES": "1",
+    "FLUSH_WINDOW_MINUTES": "5",
+    "MAX_CATCHUP_MINUTES": "360",
+    // Random incidents per site per day (0.05 ≈ one per site every 20 days). 0 disables.
+    "RANDOM_SCENARIOS_PER_SITE_DAY": "0.05",
+    "DATABRICKS_CATALOG": "workspace",
+    "DATABRICKS_SCHEMA": "quandong_twin",
+    "DATABRICKS_VOLUME": "landing"
+  },
+  // DATABRICKS_HOST, DATABRICKS_TOKEN and SCENARIO_API_KEY are secrets: `wrangler secret put NAME`.
+  "observability": { "enabled": true }
+}
