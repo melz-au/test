@@ -6,6 +6,7 @@ Needs Node.js 22.18+ and the repository's npm dependencies; skipped otherwise.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 import subprocess
@@ -16,7 +17,7 @@ import pytest
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-from quandong import detections, incidents, scorecard
+from quandong import detections, health, incidents, scorecard
 from quandong.contracts_generated import BRONZE_SCHEMA_HINTS, EXPECT_OR_DROP, EXPECT_WARN, FEEDS, LANDING_FOLDER
 from quandong.transforms import typed
 
@@ -27,9 +28,12 @@ RUNS = [
     ("PS03", "rogue_setpoint@2"),
     ("PS02", "rogue_device@2"),
     ("PS01", "unauthorised_logic_change@1"),
+    ("HO", None),  # head office: compliance evidence
 ]
 
-pytestmark = pytest.mark.skipif(shutil.which("node") is None or not (REPO / "node_modules").exists(), reason="needs node and npm install")
+pytestmark = pytest.mark.skipif(
+    shutil.which("node") is None or not (REPO / "node_modules").exists(), reason="needs node and npm install"
+)
 
 
 @pytest.fixture(scope="module")
@@ -86,7 +90,14 @@ def test_clean_site_has_no_findings(findings):
 
 
 def test_each_scenario_fires_its_rules_as_one_incident(findings):
-    by_site = {r.site_id: r for r in findings.groupBy("site_id").agg(F.array_sort(F.collect_set("rule_id")).alias("rules"), F.countDistinct("correlation_id").alias("incidents")).collect()}
+    by_site = {
+        r.site_id: r
+        for r in findings.groupBy("site_id")
+        .agg(
+            F.array_sort(F.collect_set("rule_id")).alias("rules"), F.countDistinct("correlation_id").alias("incidents")
+        )
+        .collect()
+    }
     assert by_site["PS03"].rules == ["QD-001", "QD-002", "QD-003", "QD-004"]
     assert by_site["PS03"].incidents == 1
     assert by_site["PS02"].rules == ["QD-005", "QD-006"]
@@ -112,3 +123,34 @@ def test_incident_summary_shows_the_sensor_under_rated_it(silver, findings):
     assert inc.max_severity == "critical"
     assert inc.sensor_max_severity == "medium"
     assert "PS03-EWS-01" in inc.affected_assets and "PS03-PLC-02" in inc.affected_assets
+
+
+def test_every_dashboard_query_runs(spark, silver, findings):
+    """Register the pipeline's tables as views and run each dashboard dataset query."""
+    for stream, df in silver.items():
+        if df is not None:
+            df.createOrReplaceTempView(f"silver_{stream}")
+    findings.createOrReplaceTempView("gold_detections")
+    incidents.incidents(findings, silver["security_alerts"]).createOrReplaceTempView("gold_incidents")
+    health.site_health(silver["process_telemetry"], silver["security_alerts"], findings).createOrReplaceTempView(
+        "gold_site_health"
+    )
+    health.compliance_status(silver["compliance_evidence"]).createOrReplaceTempView("gold_compliance_status")
+    scorecard.detection_scorecard(silver["scenario_log"], findings).createOrReplaceTempView("gold_detection_scorecard")
+    dash = json.loads((REPO / "lakehouse/src/dashboards/quandong_ot.lvdash.json").read_text())
+    counts = {}
+    for ds in dash["datasets"]:
+        df = spark.sql("".join(ds["queryLines"]))
+        fields = {
+            f["name"]
+            for page in dash["pages"]
+            for item in page["layout"]
+            for q in item["widget"].get("queries", [])
+            if q["query"]["datasetName"] == ds["name"]
+            for f in q["query"]["fields"]
+        }
+        assert fields <= set(df.columns), (ds["name"], fields - set(df.columns))
+        counts[ds["name"]] = df.count()
+    for name in ("ds_incidents", "ds_setpoint_writes", "ds_compliance", "ds_scorecard"):
+        assert counts[name] > 0, name
+    assert counts["ds_compliance"] == 12

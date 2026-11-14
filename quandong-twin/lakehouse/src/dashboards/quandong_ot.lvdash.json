@@ -1,1 +1,1338 @@
-{"datasets":[],"pages":[]}
+{
+  "datasets": [
+    {
+      "name": "ds_incident_kpis",
+      "displayName": "Incident KPIs (30 days)",
+      "queryLines": [
+        "SELECT count(*) AS incidents,\n",
+        "  coalesce(sum(CASE WHEN max_severity = 'critical' THEN 1 ELSE 0 END), 0) AS critical_incidents,\n",
+        "  coalesce(sum(CASE WHEN max_severity IN ('high', 'critical') AND coalesce(sensor_max_severity, 'none') IN ('none', 'low', 'medium') THEN 1 ELSE 0 END), 0) AS under_rated_by_sensor\n",
+        "FROM gold_incidents\n",
+        "WHERE first_seen_ts >= current_timestamp() - INTERVAL 30 DAYS"
+      ]
+    },
+    {
+      "name": "ds_incidents",
+      "displayName": "Incidents",
+      "queryLines": [
+        "SELECT correlation_id, site_id, from_utc_timestamp(first_seen_ts, 'Australia/Adelaide') AS first_seen_local, from_utc_timestamp(last_seen_ts, 'Australia/Adelaide') AS last_seen_local,\n",
+        "  max_severity, coalesce(sensor_max_severity, 'none') AS sensor_rated, finding_count,\n",
+        "  array_join(rule_ids, ', ') AS rules, array_join(mitre_attack_ics_techniques, ', ') AS techniques,\n",
+        "  array_join(affected_assets, ', ') AS assets, summary\n",
+        "FROM gold_incidents\n",
+        "ORDER BY first_seen_ts DESC"
+      ]
+    },
+    {
+      "name": "ds_findings",
+      "displayName": "Findings timeline",
+      "queryLines": [
+        "SELECT from_utc_timestamp(detected_at, 'Australia/Adelaide') AS detected_local, site_id, rule_id, rule_name, severity,\n",
+        "  mitre_attack_ics_technique, asset_id, correlation_id, description\n",
+        "FROM gold_detections\n",
+        "WHERE detected_at >= current_timestamp() - INTERVAL 30 DAYS"
+      ]
+    },
+    {
+      "name": "ds_site_health",
+      "displayName": "Site health (7 days)",
+      "queryLines": [
+        "SELECT site_id, hour_local, uptime_pct, completeness_pct, good_data_pct, sensor_alerts, detections\n",
+        "FROM gold_site_health\n",
+        "WHERE hour_ts >= current_timestamp() - INTERVAL 7 DAYS"
+      ]
+    },
+    {
+      "name": "ds_site_health_24h",
+      "displayName": "Site health (last 24 hours)",
+      "queryLines": [
+        "SELECT site_id, round(avg(uptime_pct), 1) AS uptime_pct, round(avg(completeness_pct), 1) AS completeness_pct,\n",
+        "  sum(sensor_alerts) AS sensor_alerts, sum(detections) AS detections\n",
+        "FROM gold_site_health\n",
+        "WHERE hour_ts >= current_timestamp() - INTERVAL 24 HOURS\n",
+        "GROUP BY site_id\n",
+        "ORDER BY site_id"
+      ]
+    },
+    {
+      "name": "ds_chlorine",
+      "displayName": "Chlorine residual with setpoint writes",
+      "queryLines": [
+        "SELECT from_utc_timestamp(timestamp_seconds(floor(unix_timestamp(event_ts) / 300) * 300), 'Australia/Adelaide') AS ts_local,\n",
+        "  concat(site_id, ' residual') AS series, round(avg(value), 3) AS mg_per_l\n",
+        "FROM silver_process_telemetry\n",
+        "WHERE tag LIKE '%.CL2.DOSE_MGL' AND quality <> 'bad' AND event_ts >= current_timestamp() - INTERVAL 3 DAYS\n",
+        "GROUP BY 1, 2\n",
+        "UNION ALL\n",
+        "SELECT from_utc_timestamp(event_ts, 'Australia/Adelaide') AS ts_local, concat(site_id, ' setpoint write') AS series, new_value AS mg_per_l\n",
+        "FROM silver_protocol_events\n",
+        "WHERE operation = 'write' AND register_or_point LIKE '%CL2.SETPOINT_MGL%' AND event_ts >= current_timestamp() - INTERVAL 3 DAYS"
+      ]
+    },
+    {
+      "name": "ds_pressure",
+      "displayName": "Main pressure",
+      "queryLines": [
+        "SELECT from_utc_timestamp(timestamp_seconds(floor(unix_timestamp(event_ts) / 300) * 300), 'Australia/Adelaide') AS ts_local, site_id,\n",
+        "  round(avg(value), 1) AS kpa\n",
+        "FROM silver_process_telemetry\n",
+        "WHERE tag LIKE '%.MAIN.PRESSURE_KPA' AND quality <> 'bad' AND event_ts >= current_timestamp() - INTERVAL 3 DAYS\n",
+        "GROUP BY 1, 2"
+      ]
+    },
+    {
+      "name": "ds_setpoint_writes",
+      "displayName": "Setpoint writes",
+      "queryLines": [
+        "SELECT from_utc_timestamp(event_ts, 'Australia/Adelaide') AS written_local, site_id, asset_id, coalesce(initiator_asset_id, initiator_ip) AS written_by,\n",
+        "  user_context, old_value, new_value,\n",
+        "  CASE WHEN new_value NOT BETWEEN 0.5 AND 1.5 THEN 'OUTSIDE SAFE BAND' ELSE 'within band' END AS assessment\n",
+        "FROM silver_protocol_events\n",
+        "WHERE operation = 'write' AND register_or_point LIKE '%SETPOINT%'\n",
+        "ORDER BY event_ts DESC"
+      ]
+    },
+    {
+      "name": "ds_compliance",
+      "displayName": "Compliance status",
+      "queryLines": [
+        "SELECT framework, control_id, control_name, status, attestation, maturity_level, previous_status,\n",
+        "  status_changed, assessment_date, evidence_ref, notes\n",
+        "FROM gold_compliance_status\n",
+        "ORDER BY framework, control_id"
+      ]
+    },
+    {
+      "name": "ds_compliance_summary",
+      "displayName": "Attestation summary",
+      "queryLines": [
+        "SELECT framework, attestation, count(*) AS controls\n",
+        "FROM gold_compliance_status\n",
+        "GROUP BY framework, attestation"
+      ]
+    },
+    {
+      "name": "ds_scorecard",
+      "displayName": "Detection scorecard",
+      "queryLines": [
+        "SELECT scenario_name, site_id, from_utc_timestamp(scenario_start_ts, 'Australia/Adelaide') AS started_local, detected, rule_detection_rate,\n",
+        "  time_to_detect_minutes, array_join(expected_rule_ids, ', ') AS expected_rules,\n",
+        "  array_join(missed_rule_ids, ', ') AS missed_rules, array_join(correlation_ids, ', ') AS incidents\n",
+        "FROM gold_detection_scorecard\n",
+        "ORDER BY scenario_start_ts DESC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "incidents",
+      "displayName": "Incidents",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "incidents_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Incidents — Murray Flats Water (synthetic)",
+                "Quandong detections grouped into incidents. *Sensor rated* is what the OT sensor itself said."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_incidents",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_incident_kpis",
+                  "fields": [
+                    {
+                      "name": "incidents",
+                      "expression": "`incidents`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "incidents",
+                  "displayName": "Incidents (30 days)"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Incidents (30 days)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_critical",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_incident_kpis",
+                  "fields": [
+                    {
+                      "name": "critical_incidents",
+                      "expression": "`critical_incidents`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "critical_incidents",
+                  "displayName": "Critical"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Critical"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_underrated",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_incident_kpis",
+                  "fields": [
+                    {
+                      "name": "under_rated_by_sensor",
+                      "expression": "`under_rated_by_sensor`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "under_rated_by_sensor",
+                  "displayName": "Under-rated by the sensor"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Under-rated by the sensor"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "findings_timeline",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_findings",
+                  "fields": [
+                    {
+                      "name": "detected_local",
+                      "expression": "`detected_local`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "rule_name",
+                      "expression": "`rule_name`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "detected_local",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "detected local"
+                },
+                "y": {
+                  "fieldName": "site_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "site"
+                },
+                "color": {
+                  "fieldName": "rule_name",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "rule name"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Findings timeline (local time)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "incident_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_incidents",
+                  "fields": [
+                    {
+                      "name": "first_seen_local",
+                      "expression": "`first_seen_local`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "max_severity",
+                      "expression": "`max_severity`"
+                    },
+                    {
+                      "name": "sensor_rated",
+                      "expression": "`sensor_rated`"
+                    },
+                    {
+                      "name": "rules",
+                      "expression": "`rules`"
+                    },
+                    {
+                      "name": "techniques",
+                      "expression": "`techniques`"
+                    },
+                    {
+                      "name": "summary",
+                      "expression": "`summary`"
+                    },
+                    {
+                      "name": "correlation_id",
+                      "expression": "`correlation_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "first_seen_local",
+                    "displayName": "First seen"
+                  },
+                  {
+                    "fieldName": "site_id",
+                    "displayName": "Site"
+                  },
+                  {
+                    "fieldName": "max_severity",
+                    "displayName": "Severity"
+                  },
+                  {
+                    "fieldName": "sensor_rated",
+                    "displayName": "Sensor rated"
+                  },
+                  {
+                    "fieldName": "rules",
+                    "displayName": "Rules"
+                  },
+                  {
+                    "fieldName": "techniques",
+                    "displayName": "ATT&CK for ICS"
+                  },
+                  {
+                    "fieldName": "summary",
+                    "displayName": "Summary"
+                  },
+                  {
+                    "fieldName": "correlation_id",
+                    "displayName": "Correlation ID"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Incidents"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "finding_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_findings",
+                  "fields": [
+                    {
+                      "name": "detected_local",
+                      "expression": "`detected_local`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "rule_id",
+                      "expression": "`rule_id`"
+                    },
+                    {
+                      "name": "severity",
+                      "expression": "`severity`"
+                    },
+                    {
+                      "name": "mitre_attack_ics_technique",
+                      "expression": "`mitre_attack_ics_technique`"
+                    },
+                    {
+                      "name": "asset_id",
+                      "expression": "`asset_id`"
+                    },
+                    {
+                      "name": "description",
+                      "expression": "`description`"
+                    },
+                    {
+                      "name": "correlation_id",
+                      "expression": "`correlation_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "detected_local",
+                    "displayName": "Detected"
+                  },
+                  {
+                    "fieldName": "site_id",
+                    "displayName": "Site"
+                  },
+                  {
+                    "fieldName": "rule_id",
+                    "displayName": "Rule"
+                  },
+                  {
+                    "fieldName": "severity",
+                    "displayName": "Severity"
+                  },
+                  {
+                    "fieldName": "mitre_attack_ics_technique",
+                    "displayName": "Technique"
+                  },
+                  {
+                    "fieldName": "asset_id",
+                    "displayName": "Asset"
+                  },
+                  {
+                    "fieldName": "description",
+                    "displayName": "Description"
+                  },
+                  {
+                    "fieldName": "correlation_id",
+                    "displayName": "Correlation ID"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Findings"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 6,
+            "height": 8
+          }
+        }
+      ]
+    },
+    {
+      "name": "site_health",
+      "displayName": "Site health",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "health_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Site health",
+                "Hourly uptime (minutes with data) and completeness (rows received ÷ expected), Australia/Adelaide hours."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "health_24h",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_site_health_24h",
+                  "fields": [
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "uptime_pct",
+                      "expression": "`uptime_pct`"
+                    },
+                    {
+                      "name": "completeness_pct",
+                      "expression": "`completeness_pct`"
+                    },
+                    {
+                      "name": "sensor_alerts",
+                      "expression": "`sensor_alerts`"
+                    },
+                    {
+                      "name": "detections",
+                      "expression": "`detections`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "site_id",
+                    "displayName": "Site"
+                  },
+                  {
+                    "fieldName": "uptime_pct",
+                    "displayName": "Uptime %"
+                  },
+                  {
+                    "fieldName": "completeness_pct",
+                    "displayName": "Completeness %"
+                  },
+                  {
+                    "fieldName": "sensor_alerts",
+                    "displayName": "Sensor alerts"
+                  },
+                  {
+                    "fieldName": "detections",
+                    "displayName": "Detections"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Last 24 hours"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "completeness_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_site_health",
+                  "fields": [
+                    {
+                      "name": "hour_local",
+                      "expression": "`hour_local`"
+                    },
+                    {
+                      "name": "completeness_pct",
+                      "expression": "`completeness_pct`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "hour_local",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "hour local"
+                },
+                "y": {
+                  "fieldName": "completeness_pct",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "completeness pct"
+                },
+                "color": {
+                  "fieldName": "site_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "site id"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Data completeness % by hour"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "alerts_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_site_health",
+                  "fields": [
+                    {
+                      "name": "hour_local",
+                      "expression": "`hour_local`"
+                    },
+                    {
+                      "name": "sensor_alerts",
+                      "expression": "`sensor_alerts`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "hour_local",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "hour local"
+                },
+                "y": {
+                  "fieldName": "sensor_alerts",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "sensor alerts"
+                },
+                "color": {
+                  "fieldName": "site_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "site id"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Sensor alerts by hour"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "process",
+      "displayName": "Chlorine and pressure",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "process_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Chlorine and pressure (last 3 days)",
+                "Five-minute averages. Normal chlorine band 0.5–1.5 mg/L; setpoint writes are overlaid as their own series."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "chlorine_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_chlorine",
+                  "fields": [
+                    {
+                      "name": "ts_local",
+                      "expression": "`ts_local`"
+                    },
+                    {
+                      "name": "mg_per_l",
+                      "expression": "`mg_per_l`"
+                    },
+                    {
+                      "name": "series",
+                      "expression": "`series`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "ts_local",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "ts local"
+                },
+                "y": {
+                  "fieldName": "mg_per_l",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "mg/L"
+                },
+                "color": {
+                  "fieldName": "series",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "series"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Chlorine residual and setpoint writes (mg/L)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "pressure_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_pressure",
+                  "fields": [
+                    {
+                      "name": "ts_local",
+                      "expression": "`ts_local`"
+                    },
+                    {
+                      "name": "kpa",
+                      "expression": "`kpa`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "ts_local",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "displayName": "ts local"
+                },
+                "y": {
+                  "fieldName": "kpa",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "kPa"
+                },
+                "color": {
+                  "fieldName": "site_id",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "site id"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Main pressure (kPa)"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "setpoint_writes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_setpoint_writes",
+                  "fields": [
+                    {
+                      "name": "written_local",
+                      "expression": "`written_local`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "asset_id",
+                      "expression": "`asset_id`"
+                    },
+                    {
+                      "name": "written_by",
+                      "expression": "`written_by`"
+                    },
+                    {
+                      "name": "user_context",
+                      "expression": "`user_context`"
+                    },
+                    {
+                      "name": "old_value",
+                      "expression": "`old_value`"
+                    },
+                    {
+                      "name": "new_value",
+                      "expression": "`new_value`"
+                    },
+                    {
+                      "name": "assessment",
+                      "expression": "`assessment`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "written_local",
+                    "displayName": "Written"
+                  },
+                  {
+                    "fieldName": "site_id",
+                    "displayName": "Site"
+                  },
+                  {
+                    "fieldName": "asset_id",
+                    "displayName": "PLC"
+                  },
+                  {
+                    "fieldName": "written_by",
+                    "displayName": "Written by"
+                  },
+                  {
+                    "fieldName": "user_context",
+                    "displayName": "User context"
+                  },
+                  {
+                    "fieldName": "old_value",
+                    "displayName": "Old"
+                  },
+                  {
+                    "fieldName": "new_value",
+                    "displayName": "New"
+                  },
+                  {
+                    "fieldName": "assessment",
+                    "displayName": "Assessment"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Setpoint writes"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ]
+    },
+    {
+      "name": "compliance",
+      "displayName": "Compliance",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "compliance_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Compliance status",
+                "Latest evidence per control for the Essential Eight and the Critical Infrastructure Risk Management Program (CIRMP), ready for board attestation."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "attestation_summary",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_compliance_summary",
+                  "fields": [
+                    {
+                      "name": "framework",
+                      "expression": "`framework`"
+                    },
+                    {
+                      "name": "controls",
+                      "expression": "`controls`"
+                    },
+                    {
+                      "name": "attestation",
+                      "expression": "`attestation`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "framework",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "framework"
+                },
+                "y": {
+                  "fieldName": "controls",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "controls"
+                },
+                "color": {
+                  "fieldName": "attestation",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "attestation"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Controls by attestation"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "compliance_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_compliance",
+                  "fields": [
+                    {
+                      "name": "framework",
+                      "expression": "`framework`"
+                    },
+                    {
+                      "name": "control_id",
+                      "expression": "`control_id`"
+                    },
+                    {
+                      "name": "control_name",
+                      "expression": "`control_name`"
+                    },
+                    {
+                      "name": "status",
+                      "expression": "`status`"
+                    },
+                    {
+                      "name": "attestation",
+                      "expression": "`attestation`"
+                    },
+                    {
+                      "name": "maturity_level",
+                      "expression": "`maturity_level`"
+                    },
+                    {
+                      "name": "previous_status",
+                      "expression": "`previous_status`"
+                    },
+                    {
+                      "name": "assessment_date",
+                      "expression": "`assessment_date`"
+                    },
+                    {
+                      "name": "notes",
+                      "expression": "`notes`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "framework",
+                    "displayName": "Framework"
+                  },
+                  {
+                    "fieldName": "control_id",
+                    "displayName": "Control"
+                  },
+                  {
+                    "fieldName": "control_name",
+                    "displayName": "Name"
+                  },
+                  {
+                    "fieldName": "status",
+                    "displayName": "Status"
+                  },
+                  {
+                    "fieldName": "attestation",
+                    "displayName": "Attestation"
+                  },
+                  {
+                    "fieldName": "maturity_level",
+                    "displayName": "Maturity"
+                  },
+                  {
+                    "fieldName": "previous_status",
+                    "displayName": "Previous"
+                  },
+                  {
+                    "fieldName": "assessment_date",
+                    "displayName": "Assessed"
+                  },
+                  {
+                    "fieldName": "notes",
+                    "displayName": "Notes"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Controls"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 9
+          }
+        }
+      ]
+    },
+    {
+      "name": "scorecard",
+      "displayName": "Detection scorecard",
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layout": [
+        {
+          "widget": {
+            "name": "scorecard_intro",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Detection scorecard",
+                "Planted scenarios (ground truth) versus Quandong detections. Time to detect uses event time."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "scorecard_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ds_scorecard",
+                  "fields": [
+                    {
+                      "name": "started_local",
+                      "expression": "`started_local`"
+                    },
+                    {
+                      "name": "scenario_name",
+                      "expression": "`scenario_name`"
+                    },
+                    {
+                      "name": "site_id",
+                      "expression": "`site_id`"
+                    },
+                    {
+                      "name": "detected",
+                      "expression": "`detected`"
+                    },
+                    {
+                      "name": "rule_detection_rate",
+                      "expression": "`rule_detection_rate`"
+                    },
+                    {
+                      "name": "time_to_detect_minutes",
+                      "expression": "`time_to_detect_minutes`"
+                    },
+                    {
+                      "name": "expected_rules",
+                      "expression": "`expected_rules`"
+                    },
+                    {
+                      "name": "missed_rules",
+                      "expression": "`missed_rules`"
+                    },
+                    {
+                      "name": "incidents",
+                      "expression": "`incidents`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "started_local",
+                    "displayName": "Started"
+                  },
+                  {
+                    "fieldName": "scenario_name",
+                    "displayName": "Scenario"
+                  },
+                  {
+                    "fieldName": "site_id",
+                    "displayName": "Site"
+                  },
+                  {
+                    "fieldName": "detected",
+                    "displayName": "Detected"
+                  },
+                  {
+                    "fieldName": "rule_detection_rate",
+                    "displayName": "Rule detection rate"
+                  },
+                  {
+                    "fieldName": "time_to_detect_minutes",
+                    "displayName": "Minutes to detect"
+                  },
+                  {
+                    "fieldName": "expected_rules",
+                    "displayName": "Expected rules"
+                  },
+                  {
+                    "fieldName": "missed_rules",
+                    "displayName": "Missed"
+                  },
+                  {
+                    "fieldName": "incidents",
+                    "displayName": "Incidents"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Scenarios"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 8
+          }
+        }
+      ]
+    }
+  ]
+}
