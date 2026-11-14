@@ -1252,4 +1252,48 @@ REFERENCE = {
         "incident_gap_minutes": 120,
         "scorecard_grace_minutes": 120,
     },
+    "detection_rules": {
+        "QD-001": {
+            "name": "Out-of-hours vendor remote session",
+            "severity": "high",
+            "technique": "T0822",
+            "enterprise_technique": None,
+        },
+        "QD-002": {
+            "name": "MFA fatigue (repeated denials then approval)",
+            "severity": "high",
+            "technique": "T0859",
+            "enterprise_technique": "T1621",
+        },
+        "QD-003": {
+            "name": "Setpoint write outside the safe band",
+            "severity": "critical",
+            "technique": "T0836",
+            "enterprise_technique": None,
+        },
+        "QD-004": {
+            "name": "Process value outside the operating band for more than 10 minutes",
+            "severity": "high",
+            "technique": "T0831",
+            "enterprise_technique": None,
+        },
+        "QD-005": {
+            "name": "New asset not in the baseline",
+            "severity": "medium",
+            "technique": "T0864",
+            "enterprise_technique": None,
+        },
+        "QD-006": {
+            "name": "Port scan on the OT network",
+            "severity": "high",
+            "technique": "T0846",
+            "enterprise_technique": None,
+        },
+        "QD-007": {
+            "name": "Program download outside policy",
+            "severity": "critical",
+            "technique": "T0843",
+            "enterprise_technique": None,
+        },
+    },
 }

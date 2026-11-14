@@ -28,6 +28,8 @@ export interface ScenarioContext {
   assets: Asset[];
   physics: PhysicsState | null;
   emit<S extends Exclude<Stream, "scenario_log">>(stream: S, event: StreamEvents[S]): StreamEvents[S];
+  /** Events already emitted this minute (for example the telemetry row a step refers to). */
+  emitted<S extends Stream>(stream: S): readonly StreamEvents[S][];
   /** Record a ground-truth step in scenario_log. */
   logStep(
     inst: ScenarioInstance,
@@ -47,8 +49,8 @@ export interface ScenarioDriver {
   name: ScenarioName;
   /** Default start time for an on-demand trigger, given the current simulated time. */
   defaultStart(nowMs: number): number;
-  /** Total duration, used to decide when an instance is finished. */
-  durationMinutes: number;
+  /** Length of the attack phase; another scenario cannot start at the site during it. */
+  attackMinutes: number;
   /** Whether the scenario can run at this site. */
   supports(site: SiteSpec): boolean;
   /** Emit this minute's events and apply state effects. Return true when finished. */

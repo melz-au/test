@@ -16,5 +16,6 @@ export default tseslint.config(
       "@typescript-eslint/no-confusing-void-expression": "off",
     },
   },
+  { files: ["generator/test/**/*.ts"], rules: { "@typescript-eslint/no-non-null-assertion": "off" } },
   { files: ["**/*.js"], ...tseslint.configs.disableTypeChecked },
 );

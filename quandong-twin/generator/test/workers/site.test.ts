@@ -61,4 +61,18 @@ describe("SiteTwin Durable Object (Workers runtime)", () => {
     expect(statuses.sites.map((s) => s.siteId).sort()).toEqual(["HO", "PS01", "PS02", "PS03", "PS04", "PS05"]);
     expect(statuses.sites.every((s) => s.started)).toBe(true);
   });
+
+  it("schedules scenarios through the protected API without revealing the ground-truth ID", async () => {
+    const post = (path: string, headers: Record<string, string> = KEY) => exports.default.fetch(`https://twin${path}`, { method: "POST", headers });
+    expect((await post("/scenarios/rogue_device?site=PS05", {})).status).toBe(401);
+    expect((await post("/scenarios/not_a_scenario?site=PS05")).status).toBe(404);
+    expect((await post("/scenarios/rogue_device?site=PS99")).status).toBe(400);
+    expect((await post("/scenarios/rogue_device?site=HO")).status).toBe(400);
+    const ok = await post("/scenarios/rogue_setpoint?site=PS05");
+    expect(ok.status).toBe(202);
+    const body = await ok.text();
+    expect(JSON.parse(body)).toMatchObject({ scheduled: "rogue_setpoint", site: "PS05" });
+    expect(body).not.toContain("GT-");
+    expect((await post("/scenarios/rogue_device?site=PS05&start=now")).status).toBe(409);
+  });
 });

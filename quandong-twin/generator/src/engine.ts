@@ -316,6 +316,7 @@ export class SiteEngine {
       assets: state.assets,
       physics: state.physics,
       emit: (stream, event) => em.emit(stream, event),
+      emitted: (stream) => em.events[stream] ?? [],
       logStep: (inst, tsMs, step, stepName, technique, expected, evidence, description) => {
         const row: ScenarioLogEvent = {
           ...envelope(this.feed, "scenario_log", tsMs, inst.id, step),
@@ -340,7 +341,7 @@ export class SiteEngine {
 
   private stepScenarios(state: SiteState, m: number, em: Emitter): void {
     const rate = this.opts.randomScenarioRatePerMinute ?? 0;
-    if (rate > 0 && this.opts.site.role === "pump_station" && !state.scenarios.some((s) => !s.done)) {
+    if (rate > 0 && this.opts.site.role === "pump_station" && !this.attackInProgress(state, m)) {
       const rng = rngFor(this.opts.seed, this.opts.site.id, m, "random-scenario");
       if (rng.chance(rate)) {
         const driver = rng.pick(Object.values(DRIVERS).filter((d) => d.supports(this.opts.site)));
@@ -357,6 +358,11 @@ export class SiteEngine {
     }
     // Keep only recent instances in state.
     state.scenarios = state.scenarios.filter((s) => !s.done || m - s.startMs < DAY_MS);
+  }
+
+  /** True while a scenario is scheduled or in its attack phase at minute m. */
+  private attackInProgress(state: SiteState, m: number): boolean {
+    return state.scenarios.some((s) => !s.done && m < s.startMs + DRIVERS[s.name].attackMinutes * MINUTE_MS);
   }
 
   private addScenario(state: SiteState, name: ScenarioName, startMs: number, origin: "api" | "random"): ScenarioInstance {
@@ -380,9 +386,11 @@ export class SiteEngine {
     const state = this.requireState();
     const driver = DRIVERS[name];
     if (!driver.supports(this.opts.site)) throw new Error(`${name} is not supported at ${this.opts.site.id}`);
-    if (state.scenarios.some((s) => !s.done)) throw new Error(`a scenario is already active at ${this.opts.site.id}`);
     const startMs =
       start === "now" ? state.nextMinuteMs : start === "next_window" ? driver.defaultStart(state.nextMinuteMs) : start;
+    if (this.attackInProgress(state, state.nextMinuteMs) || state.scenarios.some((s) => !s.done && s.name === name)) {
+      throw new Error(`a scenario is already scheduled or in progress at ${this.opts.site.id}`);
+    }
     const inst = this.addScenario(state, name, Math.max(startMs, state.nextMinuteMs), "api");
     this.checkpoint(state);
     return inst;

@@ -44,12 +44,13 @@ export async function flushAll(engine: SiteEngine, sink: Sink): Promise<void> {
 export function eventsByStream(files: Map<string, string>): Map<Stream, AnyEvent[]> {
   const out = new Map<Stream, AnyEvent[]>();
   for (const [path, body] of [...files.entries()].sort(([a], [b]) => (a < b ? -1 : 1))) {
-    const stream = path.split("/").find((_, i, parts) => parts[i - 1] === "landing" || parts[i - 1] === "_ground_truth") as Stream;
+    const parts = path.split("/");
+    const i = parts.indexOf("landing") + 1;
+    const stream = (parts[i] === "_ground_truth" ? parts[i + 1] : parts[i]) as Stream;
     const list = out.get(stream) ?? [];
     for (const line of body.split("\n")) if (line) list.push(JSON.parse(line) as AnyEvent);
     out.set(stream, list);
   }
-  out.delete("_ground_truth" as Stream);
   return out;
 }
 
