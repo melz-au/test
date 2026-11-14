@@ -43,6 +43,16 @@ for (const pattern of (root.include as string[] | undefined) ?? []) {
   }
 }
 
+// Resource keys must be unique across all resource types (the JSON Schema cannot express this).
+const typesByKey = new Map<string, string[]>();
+for (const id of Object.keys(resourceFiles)) {
+  const [type, key] = id.split(".") as [string, string];
+  typesByKey.set(key, [...(typesByKey.get(key) ?? []), type]);
+}
+for (const [key, types] of typesByKey) {
+  if (types.length > 1) errors.push(`resource key "${key}" is used by more than one resource type (${types.join(", ")}); keys must be unique`);
+}
+
 // 1. JSON Schema validation.
 let schemaPath = schemaArg ? resolve(schemaArg) : join(ROOT, "out/.cache/bundle-jsonschema.json");
 if (!existsSync(schemaPath)) {
