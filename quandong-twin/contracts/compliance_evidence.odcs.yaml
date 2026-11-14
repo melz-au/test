@@ -1,0 +1,136 @@
+# ODCS v3.2.0 data contract — single source of truth for the `compliance_evidence` feed.
+# Generated code (TypeScript types, JSON Schema, Spark schemas, pipeline expectations) derives from this file:
+# edit here, then run `npm run gen`.
+apiVersion: v3.2.0
+kind: DataContract
+id: quandong-mfw-compliance-evidence
+name: compliance_evidence
+version: 1.0.0
+status: active
+domain: ot-security-monitoring
+tenant: quandong-cyber
+dataProduct: murray-flats-water-ot-twin
+description:
+  purpose: "Daily evidence of control status against the Essential Eight and the Critical Infrastructure Risk Management Program (CIRMP)."
+  usage: Landed as newline-delimited JSON by the Cloudflare generator; ingested by the Lakeflow pipeline (bronze_compliance_evidence -> silver_compliance_evidence).
+  limitations: Entirely synthetic. Murray Flats Water, its sites, assets, users and vendors are fictional.
+tags: [synthetic, ot-security, murray-flats-water]
+customProperties:
+  - property: grain
+    value: "One row per control per day, emitted by head office (site HO) at 06:00 local time."
+  - property: landingFolder
+    value: compliance_evidence
+schema:
+  - name: compliance_evidence
+    physicalName: compliance_evidence
+    physicalType: ndjson
+    logicalType: object
+    description: "Daily evidence of control status against the Essential Eight and the Critical Infrastructure Risk Management Program (CIRMP)."
+    properties:
+      - name: event_id
+        logicalType: string
+        physicalType: STRING
+        logicalTypeOptions:
+          format: uuid
+          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        required: true
+        primaryKey: true
+        unique: true
+        description: Deterministic UUID (version 8, hash-derived) identifying the event. Used for deduplication.
+      - name: event_ts
+        logicalType: timestamp
+        physicalType: TIMESTAMP
+        required: true
+        description: When the event happened, Coordinated Universal Time (UTC), ISO 8601 with millisecond precision and a Z suffix.
+      - name: customer_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[A-Z]{2,6}$"
+        description: Quandong customer code. MFW = Murray Flats Water (fictional).
+      - name: site_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(PS[0-9]{2}|HO)$"
+        description: Pump station (PS01 to PS40) or HO for head office.
+      - name: feed
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Name of the feed this event belongs to.
+      - name: schema_version
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        description: Semantic version of the contract the event was produced against.
+      - name: generator_run_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: Identifier of the generator deployment (seed and configuration) that produced the event.
+      - name: framework
+        logicalType: string
+        physicalType: STRING
+        required: true
+        enum:
+          - value: "Essential Eight"
+          - value: CIRMP
+        description: "Control framework."
+      - name: control_id
+        logicalType: string
+        physicalType: STRING
+        required: true
+        logicalTypeOptions:
+          pattern: "^(E8|CIRMP)-[A-Z0-9-]+$"
+        description: "Control identifier, e.g. E8-MFA or CIRMP-CYB-04."
+      - name: control_name
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: "Control name."
+      - name: maturity_level
+        logicalType: integer
+        physicalType: INT
+        required: false
+        logicalTypeOptions:
+          minimum: 0
+          maximum: 3
+        description: "Essential Eight maturity level achieved (0-3). Null for CIRMP controls."
+      - name: status
+        logicalType: string
+        physicalType: STRING
+        required: true
+        enum:
+          - value: compliant
+          - value: partially_compliant
+          - value: non_compliant
+          - value: not_assessed
+        description: "Assessed status."
+      - name: evidence_ref
+        logicalType: string
+        physicalType: STRING
+        required: true
+        description: "Pointer to the evidence record, e.g. evidence://MFW/2026-11-14/E8-MFA."
+      - name: assessment_date
+        logicalType: date
+        physicalType: DATE
+        required: true
+        description: "Local (Australia/Adelaide) date the evidence applies to, yyyy-MM-dd."
+      - name: notes
+        logicalType: string
+        physicalType: STRING
+        required: false
+        description: "Assessor notes, when any."
+    quality:
+      - id: e8_has_maturity
+        type: custom
+        engine: databricks-expectation
+        implementation: "framework <> 'Essential Eight' OR maturity_level IS NOT NULL"
+        severity: error
+        dimension: completeness
+        description: "Essential Eight rows carry a maturity level."

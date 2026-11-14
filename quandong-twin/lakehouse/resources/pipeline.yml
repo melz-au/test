@@ -1,0 +1,23 @@
+# The single Lakeflow Spark Declarative Pipeline (Free Edition allows one active pipeline per type).
+# Triggered, not continuous, to save serverless quota. Bronze → silver → gold all live here.
+resources:
+  pipelines:
+    quandong_twin:
+      name: quandong-twin-lakehouse
+      catalog: ${var.catalog}
+      schema: ${resources.schemas.quandong_twin.name}
+      serverless: true
+      continuous: false
+      channel: CURRENT
+      # Added to sys.path, so pipeline sources can `import quandong...`.
+      root_path: ../src
+      libraries:
+        - glob:
+            include: ../src/pipeline/**
+      configuration:
+        quandong.landing_root: /Volumes/${var.catalog}/${var.schema}/${var.volume}
+        spark.sql.session.timeZone: UTC
+      event_log:
+        name: quandong_pipeline_event_log
+        catalog: ${var.catalog}
+        schema: ${resources.schemas.quandong_twin.name}

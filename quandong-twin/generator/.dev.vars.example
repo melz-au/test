@@ -1,0 +1,8 @@
+# Copy to generator/.dev.vars for `npm run dev` (wrangler dev). Never commit .dev.vars.
+# Local mode: the sink talks to the fake Files API (`npm run local-files-api`), which writes ./out/.
+LOCAL_MODE=true
+DATABRICKS_HOST=http://localhost:8788
+DATABRICKS_TOKEN=local-dev-token
+SCENARIO_API_KEY=local-dev-scenario-key-change-me
+# Turn random incidents off locally so runs are predictable.
+RANDOM_SCENARIOS_PER_SITE_DAY=0

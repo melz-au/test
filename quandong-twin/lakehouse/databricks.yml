@@ -1,0 +1,42 @@
+# Quandong Cyber OT digital twin — lakehouse bundle (Declarative Automation Bundles, formerly
+# Databricks Asset Bundles). Designed for Databricks Free Edition: serverless only, one pipeline,
+# one 2X-Small SQL warehouse, no outbound internet needed (the Cloudflare generator pushes files in).
+bundle:
+  name: quandong_twin
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Unity Catalog catalog. Free Edition provides "workspace".
+    default: workspace
+  schema:
+    description: Schema for the landing volume and every pipeline table. Must match DATABRICKS_SCHEMA in the generator.
+    default: quandong_twin
+  volume:
+    description: Managed volume the generator writes NDJSON into. Must match DATABRICKS_VOLUME in the generator.
+    default: landing
+  warehouse_id:
+    description: SQL warehouse for the dashboard (Free Edition has one, named "Serverless Starter Warehouse").
+    lookup:
+      warehouse: Serverless Starter Warehouse
+  refresh_cron:
+    description: Quartz cron for the pipeline refresh job (every 30 minutes by default).
+    default: "0 0/30 * * * ?"
+
+sync:
+  exclude:
+    - tests/**
+    - .venv/**
+    # Dashboards are deployed from the local JSON by the dashboard resource, not synced as files.
+    - src/dashboards/*.lvdash.json
+
+targets:
+  # Default target. Deliberately not "mode: development": development mode would prefix the schema
+  # and volume names (dev_<user>_...), and the Cloudflare generator writes to a fixed volume path.
+  free:
+    default: true
+    presets:
+      # Belt and braces: every schedule deploys paused; start it when you are ready.
+      trigger_pause_status: PAUSED
