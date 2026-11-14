@@ -306,8 +306,6 @@ function emitPy(): string {
   const parts = [
     `"""${HEADER}"""`,
     "",
-    "# ruff: noqa: E501",
-    "",
     `FEEDS = ${py(publicFeeds)}`,
     `RESTRICTED_STREAMS = ${py(feeds.filter((f) => f.restricted).map((f) => f.name))}`,
     "",

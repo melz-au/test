@@ -19,7 +19,9 @@
     "local-files-api": "node scripts/local-files-api.ts",
     "dev": "wrangler dev --config generator/wrangler.jsonc",
     "deploy": "wrangler deploy --config generator/wrangler.jsonc",
-    "check": "npm run gen:check && npm run typecheck && npm run lint && npm test"
+    "check": "npm run gen:check && npm run typecheck && npm run lint && npm test && npm run bundle:check",
+    "bundle:check": "node scripts/validate-bundle.ts",
+    "test:py": "cd lakehouse && .venv/bin/python -m pytest -q"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.8.2",

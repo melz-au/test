@@ -1,0 +1,17 @@
+# Schema and managed volume the Cloudflare generator writes into:
+#   /Volumes/${var.catalog}/${var.schema}/${var.volume}/{feed}/date=YYYY-MM-DD/{site}_{window_start_ms}.jsonl
+# Note: `databricks bundle destroy` deletes the schema, the volume and everything in them.
+resources:
+  schemas:
+    quandong_twin:
+      name: ${var.schema}
+      catalog_name: ${var.catalog}
+      comment: Quandong Cyber OT digital twin for Murray Flats Water (fictional, synthetic data only).
+
+  volumes:
+    landing:
+      name: ${var.volume}
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.quandong_twin.name}
+      volume_type: MANAGED
+      comment: Landing zone for NDJSON pushed by the Cloudflare generator via the Files API.

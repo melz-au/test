@@ -1,0 +1,28 @@
+[project]
+name = "quandong-lakehouse"
+version = "1.0.0"
+description = "Quandong Cyber OT digital twin: Lakeflow declarative pipeline logic (synthetic data only)."
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+dev = ["pyspark==4.0.1", "pytest>=8", "ruff>=0.8", "pyyaml>=6"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+src = ["src", "tests"]
+# Generated from the contracts by scripts/codegen.ts (checked by `npm run gen:check`).
+extend-exclude = ["src/quandong/contracts_generated.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+# `spark` is injected into pipeline source files by the Lakeflow runtime.
+"src/pipeline/*.py" = ["F821"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]

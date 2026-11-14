@@ -1,0 +1,10 @@
+# AI/BI dashboard over the gold tables. Dataset queries use unqualified table names; the catalog and
+# schema come from dataset_catalog / dataset_schema (Databricks CLI 0.283.0 or later).
+resources:
+  dashboards:
+    quandong_ot:
+      display_name: Quandong OT — Murray Flats Water
+      file_path: ../src/dashboards/quandong_ot.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${var.catalog}
+      dataset_schema: ${var.schema}

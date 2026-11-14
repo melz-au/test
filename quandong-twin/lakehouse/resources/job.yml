@@ -1,0 +1,18 @@
+# Refreshes the pipeline every 30 minutes. Deployed PAUSED: unpause it in the Jobs UI (or set
+# pause_status: UNPAUSED) once data is flowing. At most one run at a time.
+resources:
+  jobs:
+    quandong_twin_refresh:
+      name: quandong-twin-refresh
+      max_concurrent_runs: 1
+      schedule:
+        quartz_cron_expression: ${var.refresh_cron}
+        timezone_id: Australia/Adelaide
+        pause_status: PAUSED
+      tasks:
+        - task_key: refresh_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.quandong_twin.id}
+            full_refresh: false
+      tags:
+        project: quandong-twin
