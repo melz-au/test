@@ -50,7 +50,7 @@ export class DatabricksFilesSink implements Sink {
     };
   }
 
-  /** Files API URL for a volume path; each path segment is percent-encoded. */
+  /** Files API URL for a volume path; each segment is percent-encoded as the Databricks SDK does ("=" → %3D). */
   urlFor(path: string): string {
     if (!path.startsWith("/Volumes/")) throw new Error(`not a volume path: ${path}`);
     const encoded = path.split("/").map(encodeURIComponent).join("/");
