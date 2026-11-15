@@ -12,7 +12,7 @@ from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 
 from quandong.contracts_generated import EXPECT_OR_DROP, EXPECT_WARN, FEEDS, RESTRICTED_STREAMS
-from quandong.transforms import typed
+from quandong.transforms import NTZ_TABLE_PROPERTIES, typed
 
 
 def define_silver(stream: str) -> None:
@@ -21,7 +21,11 @@ def define_silver(stream: str) -> None:
     @dp.table(
         name=f"silver_{stream}",
         comment=f"Typed and deduplicated {stream} events (contract-validated).",
-        table_properties={"quality": "silver", "quandong.restricted": str(stream in RESTRICTED_STREAMS).lower()},
+        table_properties={
+            "quality": "silver",
+            "quandong.restricted": str(stream in RESTRICTED_STREAMS).lower(),
+            **NTZ_TABLE_PROPERTIES,
+        },
     )
     @dp.expect_all_or_drop(EXPECT_OR_DROP[stream])
     @dp.expect_all(warn)
