@@ -8,6 +8,10 @@ from pyspark.sql import functions as F
 from quandong.contracts_generated import COLUMNS, REFERENCE
 
 TIMEZONE = REFERENCE["timezone"]
+
+# Tables with TIMESTAMP_NTZ columns (local wall-clock time, e.g. event_ts_local) need this Delta table
+# feature enabled explicitly; without it Databricks fails with DELTA_FEATURES_REQUIRE_MANUAL_ENABLEMENT.
+NTZ_TABLE_PROPERTIES = {"delta.feature.timestampNtz": "supported"}
 METADATA_COLUMNS = ("_rescued_data", "_ingested_at", "_source_file")
 
 

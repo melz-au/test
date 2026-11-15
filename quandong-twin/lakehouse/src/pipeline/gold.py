@@ -6,12 +6,13 @@ Only gold_detection_scorecard reads the restricted ground-truth table.
 from pyspark import pipelines as dp
 
 from quandong import detections, health, incidents, scorecard
+from quandong.transforms import NTZ_TABLE_PROPERTIES
 
 
 @dp.materialized_view(
     name="gold_detections",
     comment="Rule-based findings (one row per finding) with MITRE ATT&CK for ICS techniques and correlation IDs.",
-    table_properties={"quality": "gold"},
+    table_properties={"quality": "gold", **NTZ_TABLE_PROPERTIES},
 )
 def gold_detections():
     findings = detections.all_detections(
@@ -27,7 +28,7 @@ def gold_detections():
 @dp.materialized_view(
     name="gold_incidents",
     comment="Findings grouped by correlation_id, with a plain-English summary.",
-    table_properties={"quality": "gold"},
+    table_properties={"quality": "gold", **NTZ_TABLE_PROPERTIES},
 )
 def gold_incidents():
     return incidents.incidents(spark.read.table("gold_detections"), spark.read.table("silver_security_alerts"))
@@ -36,7 +37,7 @@ def gold_incidents():
 @dp.materialized_view(
     name="gold_site_health",
     comment="Per site per hour: uptime, data completeness and alert counts.",
-    table_properties={"quality": "gold"},
+    table_properties={"quality": "gold", **NTZ_TABLE_PROPERTIES},
 )
 def gold_site_health():
     return health.site_health(
@@ -49,7 +50,7 @@ def gold_site_health():
 @dp.materialized_view(
     name="gold_compliance_status",
     comment="Latest status per control, for board attestation.",
-    table_properties={"quality": "gold"},
+    table_properties={"quality": "gold", **NTZ_TABLE_PROPERTIES},
 )
 def gold_compliance_status():
     return health.compliance_status(spark.read.table("silver_compliance_evidence"))
@@ -58,7 +59,7 @@ def gold_compliance_status():
 @dp.materialized_view(
     name="gold_detection_scorecard",
     comment="Detections scored against planted scenarios (ground truth): detection rate and time to detect.",
-    table_properties={"quality": "gold", "quandong.restricted": "true"},
+    table_properties={"quality": "gold", "quandong.restricted": "true", **NTZ_TABLE_PROPERTIES},
 )
 def gold_detection_scorecard():
     return scorecard.detection_scorecard(spark.read.table("silver_scenario_log"), spark.read.table("gold_detections"))

@@ -88,3 +88,11 @@ def test_silver_expectations_come_from_the_contracts():
         assert "no_rescued_data" in ds[f"silver_{s}"]["warn"]
     assert "cl2_dose_operating_band" in ds["silver_process_telemetry"]["warn"]
     assert "cl2_dose_operating_band" not in ds["silver_process_telemetry"]["drop"]
+
+
+def test_silver_and_gold_tables_enable_timestamp_ntz():
+    """Local-time columns are TIMESTAMP_NTZ; Databricks needs the Delta table feature enabled."""
+    ds = load_all()
+    for name, meta in ds.items():
+        if name.startswith(("silver_", "gold_")) and name != "silver_remote_sessions":
+            assert meta.get("table_properties", {}).get("delta.feature.timestampNtz") == "supported", name
